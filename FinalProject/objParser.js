@@ -1,4 +1,6 @@
-"use strict"
+import { loadFile } from "./files.js";
+import { loadTexture } from "./textures.js";
+import { createEntity } from "./entities.js";
 
 /**
  * Adapted from ThinMatrix's tutorial on writing an OBJ parser in Java:
@@ -7,7 +9,7 @@
  * @param {boolean} useMaterials 
  * @returns An entity build from the OBJ file
  */
-async function loadObj(file, useMaterials=true) {
+export async function loadObj(file, useMaterials=true) {
     const objFile = await loadFile(file);
     const lines = objFile.split('\n');
 
@@ -145,14 +147,4 @@ async function parseMaterialFile(file) {
     }
 
     return materials;
-}
-
-async function loadFile(url) {
-    const response = await fetch(url);
-
-    if (response.ok) {
-        return response.text();
-    } else {
-        throw `Could not load file: url`;
-    }
 }

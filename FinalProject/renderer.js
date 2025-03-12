@@ -1,4 +1,6 @@
-async function createRenderer() {
+import { loadMainShader } from "./shader.js";
+
+export async function createRenderer() {
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
 

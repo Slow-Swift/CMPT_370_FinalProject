@@ -1,8 +1,8 @@
-"use strict"
+import { createTransform } from "./entities.js";
 
-function create_camera() {
+export function createCamera() {
     return {
-        transform: create_transform(),
+        transform: createTransform(),
         getViewMatrix: getViewMatrix
     };
 }

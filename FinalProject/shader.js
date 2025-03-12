@@ -6,11 +6,7 @@
  *   Loads a shader and provides methods to use it to render and entity
  */
 
-"use strict"
-
-async function loadShader(shaderName, attributes) {
-    const shaderProgram = await createShaderFromFile(`shaders/${shaderName}.vert`, `shaders/${shaderName.frag}`, attributes);
-}
+import { loadFile } from "./files.js";
 
 /**
  * Create a shader program and load information about the locations
@@ -18,7 +14,7 @@ async function loadShader(shaderName, attributes) {
  * 
  * @returns An object representing the shader
  */
-async function loadMainShader() {
+export async function loadMainShader() {
     const shaderProgram = await createShaderFromFile(
         "shaders/main.vert", 
         "shaders/main.frag",
@@ -28,17 +24,6 @@ async function loadMainShader() {
     );
 
     gl.useProgram(shaderProgram);
-
-    /**
-     * Prepare the WebGL context to use this shader
-     */
-    function prepare(camera, light, projectionMatrix) {
-        gl.useProgram(this.program);
-        gl.uniformMatrix4fv(this.uniforms.projectionMatrix, false, flatten(projectionMatrix));
-        gl.uniformMatrix4fv(this.uniforms.viewMatrix, false, flatten(camera.getViewMatrix()));
-        gl.uniform3f(this.uniforms.lightPosition, light.position[0], light.position[1], light.position[2]);
-        gl.uniform3f(this.uniforms.lightColor, light.color[0], light.color[1], light.color[2]);
-    }
 
     // Return an object containing information relevant to the shader program
     const shader = { 
@@ -61,6 +46,21 @@ async function loadMainShader() {
     };
 
     return shader;
+}
+
+async function loadShader(shaderName, attributes) {
+    const shaderProgram = await createShaderFromFile(`shaders/${shaderName}.vert`, `shaders/${shaderName.frag}`, attributes);
+}
+
+/**
+ * Prepare the WebGL context to use this shader
+ */
+function prepare(camera, light, projectionMatrix) {
+    gl.useProgram(this.program);
+    gl.uniformMatrix4fv(this.uniforms.projectionMatrix, false, flatten(projectionMatrix));
+    gl.uniformMatrix4fv(this.uniforms.viewMatrix, false, flatten(camera.getViewMatrix()));
+    gl.uniform3f(this.uniforms.lightPosition, light.position[0], light.position[1], light.position[2]);
+    gl.uniform3f(this.uniforms.lightColor, light.color[0], light.color[1], light.color[2]);
 }
 
 /**

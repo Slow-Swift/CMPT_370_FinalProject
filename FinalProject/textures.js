@@ -40,7 +40,7 @@ function createTexture(color) {
  * @param url The url of the image
  * @returns The loaded texture
  */
-function loadTexture(url) {
+export function loadTexture(url) {
     // We will use pink as a default texture until the image is loaded
     const texture = createTexture([224, 63, 250, 255]);
 

@@ -6,8 +6,6 @@
  *   Creates entities that may be rendered by a shader
  */
 
-"use strict"
-
 /**
  * Create a new buffer and populate it with the provided data
  * @param data An array of floats to populate the buffer 
@@ -41,7 +39,7 @@ function storeIndices(indices) {
  * @param texture The texture for the model
  * @returns The created entity
  */
-function createEntity(indices, vertices, textureCoords, normals, components) {
+export function createEntity(indices, vertices, textureCoords, normals, components) {
     const vao = gl.createVertexArray();
     gl.bindVertexArray(vao);
     storeIndices(indices);
@@ -53,7 +51,7 @@ function createEntity(indices, vertices, textureCoords, normals, components) {
         vao: vao,
         vertexCount: indices.length,
         components: components,
-        transform: create_transform(),
+        transform: createTransform(),
     };
 }
 
@@ -61,7 +59,7 @@ function createEntity(indices, vertices, textureCoords, normals, components) {
  * Create a transform for an entity
  * @returns The created transform
  */
-function create_transform() {
+export function createTransform() {
     return {
         position: [0.0, 0.0, 0.0],
         scale: 1.0,
@@ -78,69 +76,3 @@ function create_transform() {
         }
     }
 }
-
-// /**
-//  * Adapted from ThinMatrix's tutorial on writing an OBJ parser in Java:
-//  * https://www.youtube.com/watch?v=YKFYtekgnP8
-//  * @param {*} file 
-//  */
-// async function loadObj(file, texture) {
-//     const objData = await loadFile(file);
-//     const lines = objData.split('\n');
-
-//     const vertices = [];
-//     const textureCoords = [];
-//     const normals = [];
-
-//     const indices = [];
-//     const orderedTextureCoords = [];
-//     const orderedNormals = [];
-
-//     let mode = "DATA";
-
-//     function processDataLine(line) {
-//         const parts = line.split(' ');
-//         if (line.startsWith("v ")) {
-//             vertices.push(Number(parts[1]), Number(parts[2]), Number(parts[3]));
-//         } else if (line.startsWith("vt ")) {
-//             textureCoords.push([Number(parts[1]), Number(parts[2])]);
-//         } else if (line.startsWith("vn ")) {
-//             normals.push([Number(parts[1]), Number(parts[2]), Number(parts[3])]);
-//         } else if (line.startsWith("f ")) {
-//             mode = "FACE";
-//             processFace(line);
-//         }
-//     }
-
-//     function processFace(line) {
-//         if (!line.startsWith("f ")) return;
-//         const parts = line.split(' ');
-//         processVertex(parts[1].split('/'));
-//         processVertex(parts[2].split('/'));
-//         processVertex(parts[3].split('/'));
-//     }
-
-//     function processVertex(vertex) {
-//         const index = Number(vertex[0]) - 1;
-//         const textureIndex = Number(vertex[1]) - 1;
-//         const normalIndex = Number(vertex[2]) - 1;
-//         indices.push(index);
-//         orderedTextureCoords[2 * index] = textureCoords[textureIndex][0];
-//         orderedTextureCoords[2 * index + 1] = 1 - textureCoords[textureIndex][1];
-//         orderedNormals[3 * index] = normals[normalIndex][0];
-//         orderedNormals[3 * index + 1] = normals[normalIndex][1];
-//         orderedNormals[3 * index + 2] = normals[normalIndex][2];
-//     }
-
-//     for (const line of lines) {
-//         switch (mode) {
-//             case "DATA": 
-//                 processDataLine(line);
-//                 break;
-//             case "FACE":
-//                 processFace(line);
-//         }
-//     }
-
-//     return createEntity(indices, vertices, orderedTextureCoords, orderedNormals, texture);
-// }

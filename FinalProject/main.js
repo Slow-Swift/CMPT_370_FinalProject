@@ -6,8 +6,11 @@
  *   Sets up a WebGL system to render a rocket ship and provide interaction
  */
 
+import { createRenderer } from "./renderer.js";
+import { createCamera } from "./camera.js";
+import { loadObj } from "./objParser.js";
+
 // Global variables
-let gl;
 const applicationData = {
     objects: []
 };
@@ -24,7 +27,7 @@ const light = {
 function initialize_gl() {
     const canvas = document.getElementById( "gl-canvas" );
 
-    gl = canvas.getContext('webgl2');
+    window.gl = canvas.getContext('webgl2');
     if (!gl) { alert( "WebGL 2.0 isn't available" ); }
 
     gl.viewport( 0, 0, canvas.width, canvas.height );
@@ -56,7 +59,7 @@ window.onload = async function init()
     initialize_gl();
     renderer = await createRenderer();
 
-    applicationData.camera = create_camera();
+    applicationData.camera = createCamera();
     // applicationData.pickerTexture = createRenderBuffers();
 
     const earth = await loadObj("objects/earth.obj");
