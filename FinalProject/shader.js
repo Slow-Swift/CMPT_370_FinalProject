@@ -8,17 +8,37 @@
 
 "use strict"
 
+async function loadShader(shaderName, attributes) {
+    const shaderProgram = await createShaderFromFile(`shaders/${shaderName}.vert`, `shaders/${shaderName.frag}`, attributes);
+}
+
 /**
  * Create a shader program and load information about the locations
  * of the relevant attributes and uniform variables
  * 
  * @returns An object representing the shader
  */
-async function loadShader() {
-    const shaderProgram = await createShaderFromFile("shader.vert", "shader.frag");
-    
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
+async function loadMainShader() {
+    const shaderProgram = await createShaderFromFile(
+        "shaders/main.vert", 
+        "shaders/main.frag",
+        [
+            "position", "textureCoord", "normal"
+        ]
+    );
+
+    gl.useProgram(shaderProgram);
+
+    /**
+     * Prepare the WebGL context to use this shader
+     */
+    function prepare(camera, light, projectionMatrix) {
+        gl.useProgram(this.program);
+        gl.uniformMatrix4fv(this.uniforms.projectionMatrix, false, flatten(projectionMatrix));
+        gl.uniformMatrix4fv(this.uniforms.viewMatrix, false, flatten(camera.getViewMatrix()));
+        gl.uniform3f(this.uniforms.lightPosition, light.position[0], light.position[1], light.position[2]);
+        gl.uniform3f(this.uniforms.lightColor, light.color[0], light.color[1], light.color[2]);
+    }
 
     // Return an object containing information relevant to the shader program
     const shader = { 
@@ -37,35 +57,10 @@ async function loadShader() {
             lightColor: gl.getUniformLocation(shaderProgram, "lightColor"),
         },
         prepare: prepare,
-        renderEntity: renderEntity,
-        recalculateProjectionMatrix: recalculateProjectionMatrix,
+        renderEntity: renderEntity
     };
 
-    shader.recalculateProjectionMatrix();
-
     return shader;
-}
-
-function recalculateProjectionMatrix() {
-    const FOV = 70.0;
-    const NEAR_PLANE = 0.1;
-    const FAR_PLANE = 1000;
-    const aspectRatio = gl.canvas.width / gl.canvas.height;
-    this.projectionMatrix = perspective(FOV, aspectRatio, NEAR_PLANE, FAR_PLANE);
-}
-
-/**
- * Prepare the WebGL context to use this shader
- */
-function prepare(camera, light) {
-    gl.enable(gl.DEPTH_TEST);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.clearColor(0, 0, 0, 1);
-    gl.useProgram(this.program);
-    gl.uniformMatrix4fv(this.uniforms.projectionMatrix, false, flatten(this.projectionMatrix));
-    gl.uniformMatrix4fv(this.uniforms.viewMatrix, false, flatten(camera.getViewMatrix()));
-    gl.uniform3f(this.uniforms.lightPosition, light.position[0], light.position[1], light.position[2]);
-    gl.uniform3f(this.uniforms.lightColor, light.color[0], light.color[1], light.color[2]);
 }
 
 /**
@@ -108,10 +103,22 @@ function compileShader(shaderSource, shaderType) {
  * @param {string} fragmentSource The source code for the fragment shader
  * @returns {WebGLProgram} The created program
  */
-function createShaderProgram(vertexSource, fragmentSource) {
+function createShaderProgram(vertexSource, fragmentSource, attributes) {
     const program = gl.createProgram();
     gl.attachShader(program, compileShader(vertexSource, gl.VERTEX_SHADER));
     gl.attachShader(program, compileShader(fragmentSource, gl.FRAGMENT_SHADER));
+
+    // Bind the attribute locations
+    if (attributes instanceof Array) {
+        for (let i=0; i<attributes.length; i++) {
+            gl.bindAttribLocation(program, i, attributes[i]);
+        }
+    } else if (typeof(attributes) == "object") {
+        for (const attribute in attributes) {
+            gl.bindAttribLocation(program, attributes[attribute], attribute);
+        }
+    }
+
     gl.linkProgram(program);
 
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
@@ -127,9 +134,9 @@ function createShaderProgram(vertexSource, fragmentSource) {
  * @param {string} fragmentFile The name of the fragment shader file
  * @returns {WebGLProgram} The new shader program
  */
-async function createShaderFromFile(vertexFile, fragmentFile) {
+async function createShaderFromFile(vertexFile, fragmentFile, attributes=[]) {
     const vertexSource = await loadFile(vertexFile);
     const fragmentSource = await loadFile(fragmentFile);
 
-    return createShaderProgram(vertexSource, fragmentSource);
+    return createShaderProgram(vertexSource, fragmentSource, attributes);
 }

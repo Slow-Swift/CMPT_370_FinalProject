@@ -6,21 +6,12 @@
  *   Sets up a WebGL system to render a rocket ship and provide interaction
  */
 
-"use strict";
-
 // Global variables
 let gl;
 const applicationData = {
     objects: []
 };
-let shader;
-const colors = {
-    white: [1.0, 1.0, 1.0],
-    red: [1.0, 0.0, 0.0],
-    green: [0.0, 1.0, 0.0],
-    blue: [0.0, 0.0, 1.0],
-    yellow: [1.0, 1.0, 0.0],
-}
+let renderer;
 
 const light = {
     position: [200, 200, 0],
@@ -50,16 +41,11 @@ function mainLoop() {
     applicationData.objects[0].transform.rotation[1] += 10 * deltaTime;
     applicationData.objects[0].transform.position = [150 * Math.cos(currentTime / 10000), 0, 150 * Math.sin(currentTime / 10000)];
     applicationData.lastFrameTime = currentTime;
-    resizeCanvas(gl.canvas);
-    drawScene();
-    requestAnimationFrame(mainLoop);
-}
-
-function drawScene() {
-    shader.prepare(applicationData.camera, light);
-    for (const object of applicationData.objects) {
-        shader.renderEntity(object);
+    if (resizeCanvas(gl.canvas)) {
+        // setFramebufferAttachmentSizes(gl.canvas.width, gl.canvas.height, applicationData.pickerTexture.texture, applicationData.pickerTexture.depthBuffer);
     }
+    renderer.renderScene(applicationData.objects, applicationData.camera, light);
+    requestAnimationFrame(mainLoop);
 }
 
 /**
@@ -68,14 +54,10 @@ function drawScene() {
 window.onload = async function init()
 {
     initialize_gl();
-    shader = await loadShader();
-    gl.useProgram(shader.program);
+    renderer = await createRenderer();
 
     applicationData.camera = create_camera();
-
-    // const tree = await loadObj("objects/tree.obj", loadTexture("images/tree.png"));
-    // tree.transform.position[2] = -5;
-    // applicationData.objects.push(tree);
+    // applicationData.pickerTexture = createRenderBuffers();
 
     const earth = await loadObj("objects/earth.obj");
     applicationData.objects.push(earth);
@@ -95,12 +77,13 @@ window.onload = async function init()
 function resizeCanvas(canvas) {
     const displayWidth = canvas.clientWidth;
     const displayHeight = canvas.clientHeight;
-
-    if (canvas.width != displayWidth || canvas.height != displayHeight) {
+    const resizeRequired = canvas.width != displayWidth || canvas.height != displayHeight;
+    if (resizeRequired) {
         canvas.width = displayWidth;
         canvas.height = displayHeight;
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     }
 
-    shader.recalculateProjectionMatrix();
+    renderer.recalculateProjectionMatrix();
+    return resizeRequired;
 }
