@@ -6,14 +6,16 @@
  *   Sets up a WebGL system to render a rocket ship and provide interaction
  */
 
-import { createRenderer } from "./renderer.js";
+import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./camera.js";
 import { loadObj } from "./objParser.js";
 
 // Global variables
 const applicationData = {
-    objects: []
+    objects: [],
+    mouse: {x:0, y:0}
 };
+window.applicationData = applicationData;
 let renderer;
 
 const light = {
@@ -30,6 +32,8 @@ function initialize_gl() {
     window.gl = canvas.getContext('webgl2');
     if (!gl) { alert( "WebGL 2.0 isn't available" ); }
 
+    gl.canvas.addEventListener('mousemove', onMouseMove);
+
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
 }
@@ -45,9 +49,10 @@ function mainLoop() {
     applicationData.objects[0].transform.position = [150 * Math.cos(currentTime / 10000), 0, 150 * Math.sin(currentTime / 10000)];
     applicationData.lastFrameTime = currentTime;
     if (resizeCanvas(gl.canvas)) {
-        // setFramebufferAttachmentSizes(gl.canvas.width, gl.canvas.height, applicationData.pickerTexture.texture, applicationData.pickerTexture.depthBuffer);
+        renderer.pickerBuffers.resize(gl.canvas.width, gl.canvas.height);
     }
     renderer.renderScene(applicationData.objects, applicationData.camera, light);
+    applicationData.mouseID = renderer.pickerBuffers.getID(applicationData.mouse.x, applicationData.mouse.y);
     requestAnimationFrame(mainLoop);
 }
 
@@ -89,4 +94,12 @@ function resizeCanvas(canvas) {
 
     renderer.recalculateProjectionMatrix();
     return resizeRequired;
+}
+
+function onMouseMove(e) {
+    const rect = gl.canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    applicationData.mouse.x = mouseX * gl.canvas.width / gl.canvas.clientWidth;
+    applicationData.mouse.y = gl.canvas.height - mouseY * gl.canvas.height / gl.canvas.clientHeight;
 }

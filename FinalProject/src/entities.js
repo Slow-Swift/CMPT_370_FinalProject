@@ -6,6 +6,8 @@
  *   Creates entities that may be rendered by a shader
  */
 
+let currentID = 1;
+
 /**
  * Create a new buffer and populate it with the provided data
  * @param data An array of floats to populate the buffer 
@@ -51,6 +53,7 @@ export function createEntity(indices, vertices, textureCoords, normals, componen
         vao: vao,
         vertexCount: indices.length,
         components: components,
+        id: currentID++,
         transform: createTransform(),
     };
 }

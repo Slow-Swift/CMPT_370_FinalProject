@@ -1,5 +1,5 @@
-// From https://webgl2fundamentals.org/webgl/lessons/webgl-picking.html
 #version 300 es
+// From https://webgl2fundamentals.org/webgl/lessons/webgl-picking.html
 
 in vec4 position;
 
