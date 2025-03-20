@@ -1,21 +1,23 @@
+/**
+ * File Name: pickerShader.js
+ * Author: Finian Lugtigheid
+ * Date: TODO
+ * Description:
+ *  Loads and manages the shader used to render to the picker texture
+ */
+
 import { loadShader } from "./shader.js";
 
 /**
- * Create a shader program and load information about the locations
- * of the relevant attributes and uniform variables
- * 
- * @returns An object representing the shader
+ * Loads the picker shader
+ * @returns the picker shader
  */
 export async function loadPickerShader() {
     const shaderProgram = await loadShader("picker", ["position"]);
     gl.useProgram(shaderProgram);
 
-    // Return an object containing information relevant to the shader program
     const shader = { 
         program: shaderProgram, 
-        attributes: {
-            vertices: gl.getAttribLocation( shaderProgram, "position" ),
-        },
         uniforms: {
             id: gl.getUniformLocation(shaderProgram, "id"),
             transformationMatrix: gl.getUniformLocation(shaderProgram, "transformationMatrix"),
@@ -44,7 +46,7 @@ function prepare(camera, light, projectionMatrix) {
  */
 function renderEntity(entity) {
     gl.uniformMatrix4fv(this.uniforms.transformationMatrix, false, flatten(entity.transform.getTransformationMatrix()));
-    gl.uniform4fv(this.uniforms.id, idToV4(entity.id));
+    gl.uniform4fv(this.uniforms.id, idToColor(entity.id));
     gl.bindVertexArray(entity.vao);
     
     for (const component of entity.components) {
@@ -52,8 +54,14 @@ function renderEntity(entity) {
     }
 }
 
-// From: https://webgl2fundamentals.org/webgl/lessons/webgl-picking.html
-function idToV4(id) {
+/**
+ * Convert and ID number to a color
+ * From: https://webgl2fundamentals.org/webgl/lessons/webgl-picking.html
+ * 
+ * @param {number} id The ID to convert
+ * @returns The color as a vector 4
+ */
+function idToColor(id) {
     return [
         ((id >> 0) & 0xFF) / 0xFF,
         ((id >> 8) & 0xFF) / 0xFF,

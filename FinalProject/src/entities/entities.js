@@ -1,37 +1,12 @@
 /**
  * File Name: entities.js
  * Name: Finian Lugtigheid
- * Date: February 10, 2025
+ * Date: TODO
  * Description:
  *   Creates entities that may be rendered by a shader
  */
 
 let currentID = 1;
-
-/**
- * Create a new buffer and populate it with the provided data
- * @param data An array of floats to populate the buffer 
- * @returns The id of the the created buffer
- */
-function storeDataInAttribute(data, attribute, dimension) {
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer );
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(attribute, dimension, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(attribute);
-    return buffer;
-}
-
-/**
- * Create a new buffer and populate it with the indices data
- * @param indices An array of the indices
- * @returns The id of the the created buffer
- */
-function storeIndices(indices) {
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer );
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int32Array(indices), gl.STATIC_DRAW);
-}
 
 /**
  * Create a new entity given the indices, vertices, and texture coordinates
@@ -59,14 +34,29 @@ export function createEntity(indices, vertices, textureCoords, normals, componen
 }
 
 /**
+ * Create a copy of the entity that has the same model
+ * @param entity The entity to copy
+ * @returns The copied entity
+ */
+export function copyEntity(entity) {
+    return { 
+        vao: entity.vao,
+        vertexCount: entity.vertexCount,
+        components: entity.components,
+        id: currentID++,
+        transform: entity.transform.copy()
+    };
+}
+
+/**
  * Create a transform for an entity
  * @returns The created transform
  */
 export function createTransform() {
     return {
         position: [0.0, 0.0, 0.0],
-        scale: 1.0,
         rotation: [0.0, 0.0, 0.0],
+        scale: 1.0,
 
         getTransformationMatrix: function() {
             const transformation = translate(this.position[0], this.position[1], this.position[2]);
@@ -76,6 +66,39 @@ export function createTransform() {
             const scaleM = scale(this.scale, this.scale, this.scale);
 
             return mult(mult(transformation, rotation), scaleM);
-        }
+        },
+
+        copy: function() {
+            let transform = createTransform();
+            transform.position = this.position.slice();
+            transform.rotation = this.rotation.slice();
+            transform.scale = this.scale;
+            return transform;
+        },
     }
+}
+
+/**
+ * Create a new buffer and populate it with the provided data
+ * @param data An array of floats to populate the buffer 
+ * @returns The id of the the created buffer
+ */
+function storeDataInAttribute(data, attribute, dimension) {
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer );
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(attribute, dimension, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(attribute);
+    return buffer;
+}
+
+/**
+ * Create a new buffer and populate it with the indices data
+ * @param indices An array of the indices
+ * @returns The id of the the created buffer
+ */
+function storeIndices(indices) {
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer );
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int32Array(indices), gl.STATIC_DRAW);
 }

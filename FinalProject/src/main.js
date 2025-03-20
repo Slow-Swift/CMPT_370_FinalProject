@@ -1,27 +1,54 @@
 /**
- * File Name: assignment3.js
- * Name: Finian Lugtigheid
- * Date: February 3, 2025
+ * File Name: main.js
+ * Author: Finian Lugtigheid
+ * Date: TODO
  * Description:
- *   Sets up a WebGL system to render a rocket ship and provide interaction
+ *  The heart of the app. It sets up the scene and updates it each frame.
  */
 
 import { createRenderer } from "./rendering/renderer.js";
-import { createCamera } from "./camera.js";
-import { loadObj } from "./objParser.js";
+import { createCamera } from "./entities/camera.js";
+import { loadObj } from "./entities/objParser.js";
+import { copyEntity } from "./entities/entities.js";
 
-// Global variables
-const applicationData = {
+const applicationData = window.applicationData = {
     objects: [],
     mouse: {x:0, y:0}
 };
-window.applicationData = applicationData;
-let renderer;
 
-const light = {
+applicationData.light = {
     position: [200, 200, 0],
     color: [1,1,1]
 };
+
+/**
+ * Sets up the program when the window loads
+ */
+window.onload = async function init()
+{
+    initialize_gl();
+    applicationData.renderer = await createRenderer();
+    applicationData.camera = createCamera();
+    applicationData.camera.transform.position = [-10, 10, 10];
+    applicationData.camera.transform.rotation = [-35, -45, 0];
+
+    // Create a basic grid of farmland
+    const farmObj = await loadObj('objects/farmland.obj');
+    for (let i=-1; i<2; i++) {
+        for (let j = -1; j < 2; j++) {
+            const obj = copyEntity(farmObj);
+            obj.transform.position = [i * 3, 0, j * 3];
+            applicationData.objects.push(obj);
+        }
+    }
+
+    // Add some corn to one of the farmlands
+    applicationData.objects.push(await loadObj('objects/corn_final.obj'));
+
+    // Start the main loop
+    mainLoop();
+};
+
 
 /**
  * Gets the WebGL context and does some basic gl initialization
@@ -33,9 +60,11 @@ function initialize_gl() {
     if (!gl) { alert( "WebGL 2.0 isn't available" ); }
 
     gl.canvas.addEventListener('mousemove', onMouseMove);
-
     gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
+
+    // Enable backface culling
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
 }
 
 /**
@@ -45,57 +74,51 @@ function initialize_gl() {
 function mainLoop() {
     const currentTime = Date.now();
     const deltaTime = (currentTime - (applicationData.lastFrameTime ?? currentTime)) / 1000;
-    applicationData.objects[0].transform.rotation[1] += 10 * deltaTime;
-    applicationData.objects[0].transform.position = [150 * Math.cos(currentTime / 10000), 0, 150 * Math.sin(currentTime / 10000)];
     applicationData.lastFrameTime = currentTime;
+
     if (resizeCanvas(gl.canvas)) {
-        renderer.pickerBuffers.resize(gl.canvas.width, gl.canvas.height);
     }
-    renderer.renderScene(applicationData.objects, applicationData.camera, light);
-    applicationData.mouseID = renderer.pickerBuffers.getID(applicationData.mouse.x, applicationData.mouse.y);
+
+    applicationData.renderer.renderScene(applicationData.objects, applicationData.camera, applicationData.light);
+    applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(applicationData.mouse.x, applicationData.mouse.y);
+    updateObjects();
     requestAnimationFrame(mainLoop);
 }
 
 /**
- * Sets up the program when the window loads
+ * Update each object in the scene 
  */
-window.onload = async function init()
-{
-    initialize_gl();
-    renderer = await createRenderer();
-
-    applicationData.camera = createCamera();
-    // applicationData.pickerTexture = createRenderBuffers();
-
-    const earth = await loadObj("objects/earth.obj");
-    applicationData.objects.push(earth);
-    earth.transform.scale = 10 * 0.6371
-
-    const sun = await loadObj("objects/sun.obj");
-    sun.transform.position = [0, 0, 0]
-    applicationData.objects.push(sun);
-    sun.transform.scale = 69.57
-
-    applicationData.camera.transform.position = [0, 150, 150];
-    applicationData.camera.transform.rotation[0] = -45;
-
-    mainLoop();
-};
-
-function resizeCanvas(canvas) {
-    const displayWidth = canvas.clientWidth;
-    const displayHeight = canvas.clientHeight;
-    const resizeRequired = canvas.width != displayWidth || canvas.height != displayHeight;
-    if (resizeRequired) {
-        canvas.width = displayWidth;
-        canvas.height = displayHeight;
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+function updateObjects() {
+    for (const obj of applicationData.objects) {
+        obj.mouseOver = applicationData.mouseID == obj.id;
     }
+}
 
-    renderer.recalculateProjectionMatrix();
+/**
+ * Resize the canvas to it's screen size. 
+ * Also updates the viewport size, the picker buffer size, 
+ * and the projection matrix
+ * @returns True if the canvas needed to be resized, otherwise false
+ */
+function resizeCanvas() {
+    const displayWidth = gl.canvas.clientWidth;
+    const displayHeight = gl.canvas.clientHeight;
+    const resizeRequired = gl.canvas.width != displayWidth || gl.canvas.height != displayHeight;
+    if (resizeRequired) {
+        gl.canvas.width = displayWidth;
+        gl.canvas.height = displayHeight;
+        gl.viewport(0, 0, displayWidth, displayHeight);
+        applicationData.renderer.pickerBuffers.resize(displayWidth, displayHeight);
+        applicationData.renderer.recalculateProjectionMatrix();
+    }
     return resizeRequired;
 }
 
+/**
+ * Called everytime the mouse is moved on the canvas and updates
+ * the recorded pixel position of the mouse.
+ * @param e The mouse move event
+ */
 function onMouseMove(e) {
     const rect = gl.canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;

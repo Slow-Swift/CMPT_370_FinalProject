@@ -1,29 +1,27 @@
+/**
+ * File Name: mainShader.js
+ * Author: Finian Lugtigheid
+ * Date: TODO
+ * Description:
+ *  Loads and manages the main shader used to render the scene
+ */
+
 import { loadShader } from "./shader.js";
 
 /**
- * Create a shader program and load information about the locations
- * of the relevant attributes and uniform variables
- * 
- * @returns An object representing the shader
+ * Load the main shader
+ * @returns The main shader
  */
 export async function loadMainShader() {
     const shaderProgram = await loadShader(
-        "main", 
-        [
-            "position", "textureCoord", "normal"
-        ]
+        "main", ["position", "textureCoord", "normal"]
     );
 
     gl.useProgram(shaderProgram);
 
     // Return an object containing information relevant to the shader program
     const shader = { 
-        program: shaderProgram, 
-        attributes: {
-            vertices: gl.getAttribLocation( shaderProgram, "position" ),
-            textureCoords: gl.getAttribLocation( shaderProgram, "textureCoord" ),
-            normals: gl.getAttribLocation( shaderProgram, "normal" ),
-        },
+        program: shaderProgram,
         uniforms: {
             texture: gl.getUniformLocation(shaderProgram, "image"),
             transformationMatrix: gl.getUniformLocation(shaderProgram, "transformationMatrix"),
@@ -31,6 +29,9 @@ export async function loadMainShader() {
             projectionMatrix: gl.getUniformLocation(shaderProgram, "projectionMatrix"),
             lightPosition: gl.getUniformLocation(shaderProgram, "lightPosition"),
             lightColor: gl.getUniformLocation(shaderProgram, "lightColor"),
+            tintColor: gl.getUniformLocation(shaderProgram, "tintColor"),
+            tintStrength: gl.getUniformLocation(shaderProgram, "tintStrength"),
+            mouseOver: gl.getUniformLocation(shaderProgram, "mouseOver"),
         },
         prepare: prepare,
         renderEntity: renderEntity
@@ -58,9 +59,12 @@ function renderEntity(entity) {
     gl.activeTexture(gl.TEXTURE0);
     gl.uniform1i(this.uniforms.texture, 0);
     gl.uniformMatrix4fv(this.uniforms.transformationMatrix, false, flatten(entity.transform.getTransformationMatrix()));
+    gl.uniform1f(this.uniforms.mouseOver, entity.mouseOver ? 1 : 0);
     gl.bindVertexArray(entity.vao);
     
     for (const component of entity.components) {
+        gl.uniform3fv(this.uniforms.tintColor, component.material.color);
+        gl.uniform1f(this.uniforms.tintStrength, component.material.colorStrength);
         gl.bindTexture(gl.TEXTURE_2D, component.material.texture);
         gl.drawElements(gl.TRIANGLES, component.vertexCount, gl.UNSIGNED_INT, 4 * component.startIndex);
     }

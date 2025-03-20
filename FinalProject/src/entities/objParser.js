@@ -1,4 +1,12 @@
-import { loadFile } from "./files.js";
+/**
+ * File Name: objParser.js
+ * Name: Finian Lugtigheid
+ * Date: TODO
+ * Description:
+ *   Loads an OBJ file and creates an entity from it
+ */
+
+import { loadFile } from "../files.js";
 import { loadTexture } from "./textures.js";
 import { createEntity } from "./entities.js";
 
@@ -132,15 +140,19 @@ async function parseMaterialFile(file) {
 
         switch (prefix) {
             case "newmtl":  // Add a new material
-                materials[data[0]] = currentMaterial = {};
+                materials[data[0]] = currentMaterial = {
+                    color: [0,0,0],
+                    colorStrength: 1
+                };
                 break;
             case "Kd":      // Set the material color (This is probably grey if there is a texture)
-                materials.color = [Number(data[0]), Number(data[1]), Number(data[2])];
+                currentMaterial.color = [Number(data[0]), Number(data[1]), Number(data[2])];
                 break  
             case "map_Kd":  // Set the material texture 
                 const filename = data[0].split('/').pop();
                 // Replace this with a call to your load texture function
                 currentMaterial.texture = loadTexture(IMAGE_FOLDER + filename); 
+                currentMaterial.colorStrength = 0;
                 break;
             // Handle more prefixes here if you want more complex materials
         }

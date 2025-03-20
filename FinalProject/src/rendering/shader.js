@@ -1,13 +1,21 @@
 /**
  * File Name: shader.js
  * Name: Finian Lugtigheid
- * Date: February 10, 2025
+ * Date: TODO
  * Description:
  *   Loads a shader and provides methods to use it to render and entity
  */
 
 import { loadFile } from "../files.js";
 
+/**
+ * Load a shader given the name of the shader.
+ * The vertex shader must be called `<shaderName>.vert`.
+ * The fragment shader must be called `<shaderName>.frag`.
+ * @param {string} shaderName The name of the shader 
+ * @param {[string]|{string:int}} attributes The attributes that will be used by the shader
+ * @returns {WebGLProgram} The created program
+ */
 export async function loadShader(shaderName, attributes) {
     const shaderProgram = await createShaderFromFile(`shaders/${shaderName}.vert`, `shaders/${shaderName}.frag`, attributes);
     return shaderProgram;
@@ -35,7 +43,8 @@ function compileShader(shaderSource, shaderType) {
  * Compile and link a shader program
  * @param {string} vertexSource The source code for the vertex shader
  * @param {string} fragmentSource The source code for the fragment shader
- * @returns {WebGLProgram} The created program
+ * @param {[string]|{string:int}} attributes The attributes that will be used by the shader
+ * @returns {WebGLProgram} The created shader program
  */
 function createShaderProgram(vertexSource, fragmentSource, attributes) {
     const program = gl.createProgram();
@@ -66,6 +75,7 @@ function createShaderProgram(vertexSource, fragmentSource, attributes) {
  * Compile and link a shader given the IDs of the scripts
  * @param {string} vertexFile The name of the vertex shader file
  * @param {string} fragmentFile The name of the fragment shader file
+ * @param {[string]|{string:int}} attributes The attributes that will be used by the shader
  * @returns {WebGLProgram} The new shader program
  */
 async function createShaderFromFile(vertexFile, fragmentFile, attributes=[]) {
