@@ -43,7 +43,7 @@ window.onload = async function init()
     }
 
     // Add some corn to one of the farmlands
-    applicationData.objects.push(await loadObj('objects/corn_final.obj'));
+    applicationData.objects.push(await loadObj('objects/cornStage4.obj'));
 
     // Start the main loop
     mainLoop();

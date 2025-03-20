@@ -3,7 +3,7 @@
  * Name: Finian Lugtigheid
  * Date: TODO
  * Description:
- *   Loads a shader and provides methods to use it to render and entity
+ *   Loads a shader given the shader name
  */
 
 import { loadFile } from "../files.js";
