@@ -10,6 +10,7 @@ import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { loadObj } from "./entities/objParser.js";
 import { copyEntity } from "./entities/entities.js";
+import { loadPlants, createCorn } from "./plant.js";
 
 const applicationData = window.applicationData = {
     objects: [],
@@ -31,6 +32,7 @@ window.onload = async function init()
     applicationData.camera = createCamera();
     applicationData.camera.transform.position = [-10, 10, 10];
     applicationData.camera.transform.rotation = [-35, -45, 0];
+    await loadPlants();
 
     // Create a basic grid of farmland
     const farmObj = await loadObj('objects/farmland.obj');
@@ -38,12 +40,13 @@ window.onload = async function init()
         for (let j = -1; j < 2; j++) {
             const obj = copyEntity(farmObj);
             obj.transform.position = [i * 3, 0, j * 3];
-            applicationData.objects.push(obj);
+            applicationData.objects.push({entity: obj});
         }
     }
 
     // Add some corn to one of the farmlands
-    applicationData.objects.push(await loadObj('objects/corn_final.obj'));
+    // applicationData.objects.push(await loadObj('objects/cornStage4.obj'));
+    applicationData.objects.push(createCorn());
 
     // Start the main loop
     mainLoop();
@@ -76,21 +79,20 @@ function mainLoop() {
     const deltaTime = (currentTime - (applicationData.lastFrameTime ?? currentTime)) / 1000;
     applicationData.lastFrameTime = currentTime;
 
-    if (resizeCanvas(gl.canvas)) {
-    }
-
+    if (resizeCanvas(gl.canvas)) {}
     applicationData.renderer.renderScene(applicationData.objects, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(applicationData.mouse.x, applicationData.mouse.y);
-    updateObjects();
+    updateObjects(deltaTime);
     requestAnimationFrame(mainLoop);
 }
 
 /**
  * Update each object in the scene 
  */
-function updateObjects() {
+function updateObjects(deltaTime) {
     for (const obj of applicationData.objects) {
-        obj.mouseOver = applicationData.mouseID == obj.id;
+        obj.entity.mouseOver = applicationData.mouseID == obj.entity.id;
+        obj.update?.(deltaTime);
     }
 }
 

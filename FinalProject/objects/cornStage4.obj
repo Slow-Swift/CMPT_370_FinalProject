@@ -1,6 +1,6 @@
 # Blender 4.2.0
 # www.blender.org
-mtllib corn_final.mtl
+mtllib cornStage4.mtl
 o Corn
 v 0.418679 0.013144 -0.622114
 v 0.418679 2.814657 -0.564140
