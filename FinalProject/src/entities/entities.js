@@ -6,26 +6,9 @@
  *   Creates entities that may be rendered by a shader
  */
 
-import { createModels } from "./models.js";
 
 let currentID = 1;
 
-// /**
-//  * Create a new entity given the indices, vertices, and texture coordinates
-//  * @param indices The indices of the model
-//  * @param vertices The vertex positions
-//  * @param textureCoords The texture coordinates for each vertex
-//  * @param texture The texture for the model
-//  * @returns The created entity
-//  */
-// export function createEntity(models) {
-//     const model = createModels(models)
-//     return { 
-//         model: model,
-//         id: currentID++,
-//         transform: createTransform(),
-//     };
-// }
 /**
  * Create a new entity given the indices, vertices, and texture coordinates
  * @param indices The indices of the model
@@ -34,8 +17,7 @@ let currentID = 1;
  * @param texture The texture for the model
  * @returns The created entity
  */
-export function createEntity(indices, vertices, orderedTextureCoords, orderedNormals, components) {
-    const model = createModels(indices, vertices, orderedTextureCoords, orderedNormals, components)
+export function createEntity(model) {
     return { 
         model: model,
         id: currentID++,

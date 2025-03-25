@@ -9,7 +9,7 @@
 import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { loadObj } from "./entities/objParser.js";
-import { copyEntity } from "./entities/entities.js";
+import { createEntity } from "./entities/entities.js";
 import { loadPlants, createCorn } from "./plant.js";
 
 const applicationData = window.applicationData = {
@@ -38,7 +38,7 @@ window.onload = async function init()
     const farmObj = await loadObj('objects/farmland.obj');
     for (let i=-1; i<2; i++) {
         for (let j = -1; j < 2; j++) {
-            const obj = copyEntity(farmObj);
+            const obj = createEntity(farmObj);
             obj.transform.position = [i * 3, 0, j * 3];
             applicationData.objects.push({entity: obj});
         }
