@@ -9,7 +9,7 @@
 import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { loadObj } from "./entities/objParser.js";
-import { copyEntity } from "./entities/entities.js";
+import { createEntity } from "./entities/entities.js";
 import { loadPlants, createCorn } from "./plant.js";
 
 const applicationData = window.applicationData = {
@@ -35,17 +35,16 @@ window.onload = async function init()
     await loadPlants();
 
     // Create a basic grid of farmland
-    const farmObj = await loadObj('objects/farmland.obj');
+    const farmModel = await loadObj('objects/farmland.obj');
     for (let i=-1; i<2; i++) {
         for (let j = -1; j < 2; j++) {
-            const obj = copyEntity(farmObj);
-            obj.transform.position = [i * 3, 0, j * 3];
-            applicationData.objects.push({entity: obj});
+            const farmland = createEntity(farmModel);
+            farmland.transform.position = [i * 3, 0, j * 3];
+            applicationData.objects.push(farmland);
         }
     }
 
     // Add some corn to one of the farmlands
-    // applicationData.objects.push(await loadObj('objects/cornStage4.obj'));
     applicationData.objects.push(createCorn());
 
     // Start the main loop
@@ -91,7 +90,7 @@ function mainLoop() {
  */
 function updateObjects(deltaTime) {
     for (const obj of applicationData.objects) {
-        obj.entity.mouseOver = applicationData.mouseID == obj.entity.id;
+        obj.mouseOver = applicationData.mouseID == obj.id;
         obj.update?.(deltaTime);
     }
 }

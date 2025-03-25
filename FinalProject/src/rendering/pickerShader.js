@@ -47,9 +47,9 @@ function prepare(camera, light, projectionMatrix) {
 function renderEntity(entity) {
     gl.uniformMatrix4fv(this.uniforms.transformationMatrix, false, flatten(entity.transform.getTransformationMatrix()));
     gl.uniform4fv(this.uniforms.id, idToColor(entity.id));
-    gl.bindVertexArray(entity.vao);
+    gl.bindVertexArray(entity.model.vao);
     
-    for (const component of entity.components) {
+    for (const component of entity.model.components) {
         gl.drawElements(gl.TRIANGLES, component.vertexCount, gl.UNSIGNED_INT, 4 * component.startIndex);
     }
 }

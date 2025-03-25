@@ -60,9 +60,9 @@ function renderEntity(entity) {
     gl.uniform1i(this.uniforms.texture, 0);
     gl.uniformMatrix4fv(this.uniforms.transformationMatrix, false, flatten(entity.transform.getTransformationMatrix()));
     gl.uniform1f(this.uniforms.mouseOver, entity.mouseOver ? 1 : 0);
-    gl.bindVertexArray(entity.vao);
+    gl.bindVertexArray(entity.model.vao);
     
-    for (const component of entity.components) {
+    for (const component of entity.model.components) {
         gl.uniform3fv(this.uniforms.tintColor, component.material.color);
         gl.uniform1f(this.uniforms.tintStrength, component.material.colorStrength);
         gl.bindTexture(gl.TEXTURE_2D, component.material.texture);

@@ -8,7 +8,7 @@
 
 import { loadFile } from "../files.js";
 import { loadTexture } from "./textures.js";
-import { createEntity } from "./entities.js";
+import { createModels } from "./models.js";
 
 /**
  * Adapted from ThinMatrix's tutorial on writing an OBJ parser in Java:
@@ -92,7 +92,7 @@ export async function loadObj(file, useMaterials=true) {
     } 
     
     // Replace this with a call to your own create entity/model/object function
-    return createEntity(
+    return createModels(
         objData.indices, 
         objData.vertices, 
         objData.orderedTextureCoords, 
