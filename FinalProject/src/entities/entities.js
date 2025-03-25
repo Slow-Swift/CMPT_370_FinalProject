@@ -18,16 +18,16 @@ let currentID = 1;
  * @returns The created entity
  */
 export function createEntity(model) {
-
-    return { 
+    const entity = {
         model: model,
         id: currentID++,
         children: [],
         parent: null,
-        transform: createTransform(),
         setParent: setParent,
         update: update
-    };
+    }
+    entity.transform = createTransform(entity);
+    return entity;
 }
 /**
  * Create a copy of the entity that has the same model
@@ -61,20 +61,26 @@ export function copyEntity(entity) {
  * Create a transform for an entity
  * @returns The created transform
  */
-export function createTransform() {
+export function createTransform(entity) {
     return {
         position: [0.0, 0.0, 0.0],
         rotation: [0.0, 0.0, 0.0],
         scale: 1.0,
-
+        entity: entity,
         getTransformationMatrix: function() {
             const transformation = translate(this.position[0], this.position[1], this.position[2]);
             let rotation = rotateX(this.rotation[0]);
             rotation = mult(rotation, rotateY(this.rotation[1]));
             rotation = mult(rotation, rotateZ(this.rotation[2]));
             const scaleM = scale(this.scale, this.scale, this.scale);
+            
+            const childTransform = mult(mult(transformation, rotation), scaleM);
 
-            return mult(mult(transformation, rotation), scaleM);
+            if (this.entity!= null && this.entity.parent != null){
+                const parentTransform = this.entity.parent.transform.getTransformationMatrix();
+                return mult(parentTransform, childTransform);
+            }
+            return childTransform;
         },
 
         copy: function() {
