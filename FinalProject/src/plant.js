@@ -1,21 +1,20 @@
 import { loadObj } from "./entities/objParser.js";
 import { createEntity } from "./entities/entities.js";
 
-let plants = {}
+let plantModels = {}
 
 export function createCorn() {
-    return {
-        stages: plants.corn,
-        entity: createEntity(plants.corn[0]),
-        stage: 0,
-        growthTime: 0,
-        readyTime: 10,
-        update: updatePlant
-    }
+    let corn = createEntity(plantModels.corn[0]);
+    corn.stages = plantModels.corn;
+    corn.stage = 0;
+    corn.growthTime = 0;
+    corn.readyTime = 10;
+    corn.update = updatePlant;
+    return corn;
 }
 
 export async function loadPlants() {
-    plants.corn = await loadPlant("corn");
+    plantModels.corn = await loadPlant("corn");
 }
 
 async function loadPlant(plant) {
@@ -31,5 +30,5 @@ async function loadPlant(plant) {
 function updatePlant(deltaTime) {
     this.growthTime += deltaTime;
     this.stage = Math.min(Math.floor(4 * this.growthTime / this.readyTime), 3);
-    this.entity.model = this.stages[this.stage];
+    this.model = this.stages[this.stage];
 }

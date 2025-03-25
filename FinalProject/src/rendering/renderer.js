@@ -38,14 +38,14 @@ function renderScene(entities, camera, light) {
     this.preparePicker();
     this.pickerShader.prepare(camera, light, this.projectionMatrix);
     for (const entity of entities) {
-        this.pickerShader.renderEntity(entity.entity);
+        this.pickerShader.renderEntity(entity);
     }
 
     // Render to the screen
     this.prepareMain();
     this.mainShader.prepare(camera, light, this.projectionMatrix);
     for (const entity of entities) {
-        this.mainShader.renderEntity(entity.entity);
+        this.mainShader.renderEntity(entity);
     }
 }
 
