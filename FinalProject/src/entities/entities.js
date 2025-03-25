@@ -18,11 +18,30 @@ let currentID = 1;
  * @returns The created entity
  */
 export function createEntity(model) {
+
     return { 
         model: model,
         id: currentID++,
+        children: [],
+        parent: null,
         transform: createTransform(),
+        setParent: setParent,
+        update: update
     };
+}
+/**
+ * Create a copy of the entity that has the same model
+ * @param entity The entity to copy
+ */
+export function setParent(entity) {
+    if (this.parent != null){
+        const index = this.parent.children.indexOf(this)
+        if (index > -1){
+            this.parent.children.splice(index, 1);
+        }
+    };
+    this.parent = entity;
+    entity?.children.push(this);
 }
 
 /**
@@ -65,5 +84,13 @@ export function createTransform() {
             transform.scale = this.scale;
             return transform;
         },
+    }
+}
+
+function update(deltaTime){
+    this.mouseOver = applicationData.mouseID == this.id;
+    this.onUpdate?.(deltaTime);
+    for (const child of this.children){
+        child.update(deltaTime);
     }
 }

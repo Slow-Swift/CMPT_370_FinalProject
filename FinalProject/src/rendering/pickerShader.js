@@ -45,6 +45,7 @@ function prepare(camera, light, projectionMatrix) {
  * @param shape The shape to render 
  */
 function renderEntity(entity) {
+
     gl.uniformMatrix4fv(this.uniforms.transformationMatrix, false, flatten(entity.transform.getTransformationMatrix()));
     gl.uniform4fv(this.uniforms.id, idToColor(entity.id));
     gl.bindVertexArray(entity.model.vao);

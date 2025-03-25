@@ -9,7 +9,7 @@ export function createCorn() {
     corn.stage = 0;
     corn.growthTime = 0;
     corn.readyTime = 10;
-    corn.update = updatePlant;
+    corn.onUpdate = updatePlant;
     return corn;
 }
 

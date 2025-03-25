@@ -33,22 +33,26 @@ export async function createRenderer() {
  * @param camera The camera
  * @param light The light in the scene
  */
-function renderScene(entities, camera, light) {
+function renderScene(scene, camera, light) {
     // Render to the picker texture
     this.preparePicker();
     this.pickerShader.prepare(camera, light, this.projectionMatrix);
-    for (const entity of entities) {
-        this.pickerShader.renderEntity(entity);
-    }
+    renderEntity(this.pickerShader, scene);
 
     // Render to the screen
     this.prepareMain();
     this.mainShader.prepare(camera, light, this.projectionMatrix);
-    for (const entity of entities) {
-        this.mainShader.renderEntity(entity);
-    }
+    renderEntity(this.mainShader, scene);
 }
 
+function renderEntity(shader, entity){
+    if (entity.model != null){
+        shader.renderEntity(entity);
+    }
+    for (const child of entity.children){
+        renderEntity(shader, child);
+    }
+}
 /**
  * Prepare the WebGL context to use the picker shader
  */
