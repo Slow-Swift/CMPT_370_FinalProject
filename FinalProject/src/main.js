@@ -13,7 +13,7 @@ import { createEntity } from "./entities/entities.js";
 import { loadPlants, createCorn } from "./plant.js";
 
 const applicationData = window.applicationData = {
-    objects: [],
+    scene: createEntity(),
     mouse: {x:0, y:0}
 };
 
@@ -40,12 +40,12 @@ window.onload = async function init()
         for (let j = -1; j < 2; j++) {
             const farmland = createEntity(farmModel);
             farmland.transform.position = [i * 3, 0, j * 3];
-            applicationData.objects.push(farmland);
+            farmland.setParent(applicationData.scene);
         }
     }
 
-    // Add some corn to one of the farmlands
-    applicationData.objects.push(createCorn());
+    const corn = createCorn();
+    corn.setParent(applicationData.scene.children[0]);
 
     // Start the main loop
     mainLoop();
@@ -79,20 +79,10 @@ function mainLoop() {
     applicationData.lastFrameTime = currentTime;
 
     if (resizeCanvas(gl.canvas)) {}
-    applicationData.renderer.renderScene(applicationData.objects, applicationData.camera, applicationData.light);
+    applicationData.renderer.renderScene(applicationData.scene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(applicationData.mouse.x, applicationData.mouse.y);
-    updateObjects(deltaTime);
+    applicationData.scene.update(deltaTime);
     requestAnimationFrame(mainLoop);
-}
-
-/**
- * Update each object in the scene 
- */
-function updateObjects(deltaTime) {
-    for (const obj of applicationData.objects) {
-        obj.mouseOver = applicationData.mouseID == obj.id;
-        obj.update?.(deltaTime);
-    }
 }
 
 /**
