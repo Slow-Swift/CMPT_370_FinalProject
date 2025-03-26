@@ -12,6 +12,7 @@ import { createEntity } from "./entities/entities.js";
 import { loadPlants, createCorn } from "./plant.js";
 import { createFarmland, loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
+import { setupFarmland } from "./farmlandManager.js";
 
 const applicationData = window.applicationData = {
     scene: createEntity(),
@@ -36,15 +37,17 @@ window.onload = async function init()
     applicationData.camera.transform.position = [-10, 10, 10];
     applicationData.camera.transform.rotation = [-35, -45, 0];
 
-    // Create a basic grid of farmland
-    for (let i=-1; i<2; i++) {
-        for (let j = -1; j < 2; j++) {
-            const farmland = createFarmland();
-            farmland.transform.position = [i * 3, 0, j * 3];
-            farmland.setParent(applicationData.scene);
-            // createCorn().setParent(farmland);
-        }
-    }
+    setupFarmland();
+
+    // // Create a basic grid of farmland
+    // for (let i=-1; i<2; i++) {
+    //     for (let j = -1; j < 2; j++) {
+    //         const farmland = createFarmland();
+    //         farmland.transform.position = [i * 3, 0, j * 3];
+    //         farmland.setParent(applicationData.scene);
+    //         // createCorn().setParent(farmland);
+    //     }
+    // }
 
     // Start the main loop
     mainLoop();
