@@ -23,6 +23,7 @@ export function createEntity(model) {
         id: currentID++,
         children: [],
         parent: null,
+        pickable: true,
         setParent: setParent,
         update: update
     }
@@ -42,19 +43,6 @@ export function setParent(entity) {
     };
     this.parent = entity;
     entity?.children.push(this);
-}
-
-/**
- * Create a copy of the entity that has the same model
- * @param entity The entity to copy
- * @returns The copied entity
- */
-export function copyEntity(entity) {
-    return { 
-        id: currentID++,
-        model: entity.model,
-        transform: entity.transform.copy()
-    };
 }
 
 /**
@@ -93,8 +81,14 @@ export function createTransform(entity) {
     }
 }
 
-function update(deltaTime){
-    this.mouseOver = applicationData.mouseID == this.id;
+function update(deltaTime) {
+    if (this.pickable) {
+        this.mouseOver = applicationData.mouseID == this.id;
+        if (this.mouseOver && inputData.mouse.clicked) {
+            this.onClick();
+        }
+    }
+    
     this.onUpdate?.(deltaTime);
     for (const child of this.children){
         child.update(deltaTime);

@@ -9,6 +9,7 @@ export function createCorn() {
     corn.stage = 0;
     corn.growthTime = 0;
     corn.readyTime = 10;
+    corn.pickable = false;
     corn.onUpdate = updatePlant;
     return corn;
 }
@@ -29,6 +30,7 @@ async function loadPlant(plant) {
 
 function updatePlant(deltaTime) {
     this.growthTime += deltaTime;
-    this.stage = Math.min(Math.floor(4 * this.growthTime / this.readyTime), 3);
+    this.stage = Math.min(Math.floor((this.stages.length - 1) * this.growthTime / this.readyTime), this.stages.length - 1);
     this.model = this.stages[this.stage];
+    this.ready = this.growthTime >= this.readyTime;
 }
