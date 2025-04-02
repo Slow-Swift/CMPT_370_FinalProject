@@ -9,6 +9,7 @@
 import { createRenderBuffers } from "../picker.js";
 import { loadMainShader } from "./mainShader.js";
 import { loadPickerShader } from "./pickerShader.js";
+import { loadUIShader } from "./uiShader.js";
 
 /**
  * Create the renderer object
@@ -17,13 +18,15 @@ import { loadPickerShader } from "./pickerShader.js";
 export async function createRenderer() {
     return {
         mainShader: await loadMainShader(),
+        uiShader: await loadUIShader(),
         pickerShader: await loadPickerShader(),
         pickerBuffers: await createRenderBuffers(),
         projectionMatrix: calculateProjectionMatrix(),
         renderScene: renderScene,
         recalculateProjectionMatrix: function() { this.projectionMatrix = calculateProjectionMatrix() },
         preparePicker: preparePicker,
-        prepareMain: prepareMain
+        prepareMain: prepareMain,
+        prepareUI: prepareUI
     }
 }
 
@@ -33,7 +36,7 @@ export async function createRenderer() {
  * @param camera The camera
  * @param light The light in the scene
  */
-function renderScene(scene, camera, light) {
+function renderScene(scene, ui, camera, light) {
     // Render to the picker texture
     this.preparePicker();
     this.pickerShader.prepare(camera, light, this.projectionMatrix);
@@ -43,6 +46,10 @@ function renderScene(scene, camera, light) {
     this.prepareMain();
     this.mainShader.prepare(camera, light, this.projectionMatrix);
     renderEntity(this.mainShader, scene);
+
+    this.prepareUI();
+    this.uiShader.prepare();
+    renderEntity(this.uiShader, ui);
 }
 
 function renderEntity(shader, entity){
@@ -71,6 +78,15 @@ function prepareMain() {
     gl.clearColor(0.6, 0.4, 0.2, 1);
     gl.enable(gl.DEPTH_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+}
+
+/**
+ * Prepare the WebGL context to use the main shader shader
+ */
+function prepareUI() {
+    this.pickerBuffers.disable();
+    gl.enable(gl.DEPTH_TEST);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
 }
 
 /**

@@ -21,9 +21,10 @@ export function createFarmland(x, y) {
 }
 
 function onUpdate() {
+    const baseScale = this.unlocked ? 1.0 : 0.4;
+    const scaleMultiplier = (this.mouseOver && this.canInteract()) ? 1.1 : 1.0;
     if (this.plant) this.plant.mouseOver = this.mouseOver;
-    this.transform.scale = this.unlocked ? 1.0 : 0.4;
-    this.transform.scale *= (this.mouseOver && this.canInteract()) ? 1.1 : 1.0;
+    this.transform.scaleAll(baseScale * scaleMultiplier);
 }
 
 function onClick() {

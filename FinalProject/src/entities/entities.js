@@ -53,14 +53,14 @@ export function createTransform(entity) {
     return {
         position: [0.0, 0.0, 0.0],
         rotation: [0.0, 0.0, 0.0],
-        scale: 1.0,
+        scale: [1.0, 1.0, 1.0],
         entity: entity,
         getTransformationMatrix: function() {
             const transformation = translate(this.position[0], this.position[1], this.position[2]);
             let rotation = rotateX(this.rotation[0]);
             rotation = mult(rotation, rotateY(this.rotation[1]));
             rotation = mult(rotation, rotateZ(this.rotation[2]));
-            const scaleM = scale(this.scale, this.scale, this.scale);
+            const scaleM = scale(this.scale[0], this.scale[1], this.scale[2]);
             
             const childTransform = mult(mult(transformation, rotation), scaleM);
 
@@ -75,9 +75,13 @@ export function createTransform(entity) {
             let transform = createTransform();
             transform.position = this.position.slice();
             transform.rotation = this.rotation.slice();
-            transform.scale = this.scale;
+            transform.scale = this.scale.slice();
             return transform;
         },
+
+        scaleAll: function(scale) {
+            this.scale = [scale, scale, scale];
+        }
     }
 }
 
