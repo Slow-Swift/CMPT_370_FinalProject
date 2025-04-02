@@ -9,13 +9,16 @@
 import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { createEntity } from "./entities/entities.js";
-import { loadPlants, createCorn } from "./plant.js";
-import { createFarmland, loadFarmlandModel } from "./farmland.js";
+import { createQuad, setupQuad } from "./quad.js";
+import { loadPlants} from "./plant.js";
+import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
 
+
 const applicationData = window.applicationData = {
-    scene: createEntity(),
+    scene: createEntity(), 
+    uiScene: createEntity(), 
 };
 
 applicationData.light = {
@@ -37,29 +40,24 @@ window.onload = async function init()
     applicationData.camera.transform.position = [-10, 10, 10];
     applicationData.camera.transform.rotation = [-35, -45, 0];
 
+
     setupFarmland();
-
-    // // Create a basic grid of farmland
-    // for (let i=-1; i<2; i++) {
-    //     for (let j = -1; j < 2; j++) {
-    //         const farmland = createFarmland();
-    //         farmland.transform.position = [i * 3, 0, j * 3];
-    //         farmland.setParent(applicationData.scene);
-    //         // createCorn().setParent(farmland);
-    //     }
-    // }
-
-    // Start the main loop
+    const quad = createQuad(0.2, 1.0)
+    quad.setParent(applicationData.uiScene);
+    quad.transform.position = [0.8, 0, 0];
+    const quadTwo = createQuad(0.8, 0.15)
+    quadTwo.setParent(quad);
+    quadTwo.transform.position = [-2, 0.5, 0];
     mainLoop();
 };
 
 
 /**
  * Gets the WebGL context and does some basic gl initialization
- */
+*/
 function initialize_gl() {
     const canvas = document.getElementById( "gl-canvas" );
-
+    
     window.gl = canvas.getContext('webgl2');
     if (!gl) { alert( "WebGL 2.0 isn't available" ); }
     gl.viewport( 0, 0, canvas.width, canvas.height );
@@ -72,21 +70,24 @@ function initialize_gl() {
 async function loadModels() {
     await loadPlants();
     await loadFarmlandModel();
+    setupQuad();
 }
 
 /**
  * The main rendering loop
  * Redraws the screen and updates the rocket ship
- */
+*/
 function mainLoop() {
     const currentTime = Date.now();
     const deltaTime = (currentTime - (applicationData.lastFrameTime ?? currentTime)) / 1000;
     applicationData.lastFrameTime = currentTime;
-
+    
     if (resizeCanvas(gl.canvas)) {}
-    applicationData.renderer.renderScene(applicationData.scene, applicationData.camera, applicationData.light);
+    applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
+
+
     updateInputs();
     requestAnimationFrame(mainLoop);
 }
@@ -110,4 +111,5 @@ function resizeCanvas() {
     }
     return resizeRequired;
 }
+
 
