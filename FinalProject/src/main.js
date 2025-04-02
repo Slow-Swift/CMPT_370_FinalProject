@@ -9,8 +9,8 @@
 import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { createEntity } from "./entities/entities.js";
-import { loadPlants, createCorn } from "./plant.js";
-import { createFarmland, loadFarmlandModel } from "./farmland.js";
+import { loadPlants } from "./plant.js";
+import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
 
@@ -34,20 +34,10 @@ window.onload = async function init()
 
     applicationData.renderer = await createRenderer();
     applicationData.camera = createCamera();
-    applicationData.camera.transform.position = [-10, 10, 10];
+    applicationData.camera.transform.position = [-100, 100, 100];
     applicationData.camera.transform.rotation = [-35, -45, 0];
 
     setupFarmland();
-
-    // // Create a basic grid of farmland
-    // for (let i=-1; i<2; i++) {
-    //     for (let j = -1; j < 2; j++) {
-    //         const farmland = createFarmland();
-    //         farmland.transform.position = [i * 3, 0, j * 3];
-    //         farmland.setParent(applicationData.scene);
-    //         // createCorn().setParent(farmland);
-    //     }
-    // }
 
     // Start the main loop
     mainLoop();
@@ -84,9 +74,12 @@ function mainLoop() {
     applicationData.lastFrameTime = currentTime;
 
     if (resizeCanvas(gl.canvas)) {}
+
     applicationData.renderer.renderScene(applicationData.scene, applicationData.camera, applicationData.light);
+    
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
+    applicationData.camera.update(deltaTime);
     updateInputs();
     requestAnimationFrame(mainLoop);
 }
@@ -106,7 +99,6 @@ function resizeCanvas() {
         gl.canvas.height = displayHeight;
         gl.viewport(0, 0, displayWidth, displayHeight);
         applicationData.renderer.pickerBuffers.resize(displayWidth, displayHeight);
-        applicationData.renderer.recalculateProjectionMatrix();
     }
     return resizeRequired;
 }

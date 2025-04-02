@@ -1,10 +1,12 @@
 window.inputData = {
-    mouse: {x:0, y:0}
+    mouse: {x:0, y:0},
+    isDown: {},
 };
 
 export function updateInputs() {
-    inputData.mouse.wasDown = false;
+    inputData.mouse.wasDown = inputData.mouse.clicked;
     inputData.mouse.clicked = false;
+    inputData.wasDown = structuredClone(inputData.isDown);
 }
 
 export function initializeInputSystem() {
@@ -12,6 +14,8 @@ export function initializeInputSystem() {
     gl.canvas.addEventListener('mouseup', () => inputData.mouse.down=false);
     gl.canvas.addEventListener('mousedown', () => inputData.mouse.down=true);
     gl.canvas.addEventListener('click', onClick);
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
 }
 
 function onClick(e) {
@@ -25,4 +29,12 @@ function setMousePos(x, y) {
     const mouseY = y - rect.top;
     inputData.mouse.x = mouseX * gl.canvas.width / gl.canvas.clientWidth;
     inputData.mouse.y = gl.canvas.height - mouseY * gl.canvas.height / gl.canvas.clientHeight;
+}
+
+function onKeyDown(e) {
+    inputData.isDown[e.code] = true;
+}
+
+function onKeyUp(e) {
+    inputData.isDown[e.code] = false;
 }

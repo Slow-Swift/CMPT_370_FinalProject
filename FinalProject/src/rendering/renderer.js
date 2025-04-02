@@ -19,9 +19,7 @@ export async function createRenderer() {
         mainShader: await loadMainShader(),
         pickerShader: await loadPickerShader(),
         pickerBuffers: await createRenderBuffers(),
-        projectionMatrix: calculateProjectionMatrix(),
         renderScene: renderScene,
-        recalculateProjectionMatrix: function() { this.projectionMatrix = calculateProjectionMatrix() },
         preparePicker: preparePicker,
         prepareMain: prepareMain
     }
@@ -34,14 +32,15 @@ export async function createRenderer() {
  * @param light The light in the scene
  */
 function renderScene(scene, camera, light) {
+    const projectionMatrix = calculateProjectionMatrix(camera);
     // Render to the picker texture
     this.preparePicker();
-    this.pickerShader.prepare(camera, light, this.projectionMatrix);
+    this.pickerShader.prepare(camera, light, projectionMatrix);
     renderEntity(this.pickerShader, scene);
 
     // Render to the screen
     this.prepareMain();
-    this.mainShader.prepare(camera, light, this.projectionMatrix);
+    this.mainShader.prepare(camera, light, projectionMatrix);
     renderEntity(this.mainShader, scene);
 }
 
@@ -77,11 +76,10 @@ function prepareMain() {
  * Calculate the projection matrix to use
  * @returns The projection matrix
  */
-function calculateProjectionMatrix() {
+function calculateProjectionMatrix(camera) {
     const NEAR_PLANE = 0.1;
     const FAR_PLANE = 1000;
     const aspectRatio = gl.canvas.width / gl.canvas.height;
-    const SIZE = 10;
-    // return perspective(FOV, aspectRatio, NEAR_PLANE, FAR_PLANE);
-    return ortho(-SIZE, SIZE, -SIZE / aspectRatio, SIZE / aspectRatio, NEAR_PLANE, FAR_PLANE);
+    const size = camera.size;
+    return ortho(-size, size, -size / aspectRatio, size / aspectRatio, NEAR_PLANE, FAR_PLANE);
 }
