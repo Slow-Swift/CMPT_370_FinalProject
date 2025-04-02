@@ -37,10 +37,10 @@ window.onload = async function init()
 
     applicationData.renderer = await createRenderer();
     applicationData.camera = createCamera();
-    applicationData.camera.transform.position = [-10, 10, 10];
+    applicationData.camera.transform.position = [-100, 100, 100];
     applicationData.camera.transform.rotation = [-35, -45, 0];
 
-
+    // Start the main loop
     setupFarmland();
     const quad = createQuad(0.2, 1.0)
     quad.setParent(applicationData.uiScene);
@@ -86,8 +86,7 @@ function mainLoop() {
     applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
-
-
+    applicationData.camera.update(deltaTime);
     updateInputs();
     requestAnimationFrame(mainLoop);
 }
@@ -107,7 +106,6 @@ function resizeCanvas() {
         gl.canvas.height = displayHeight;
         gl.viewport(0, 0, displayWidth, displayHeight);
         applicationData.renderer.pickerBuffers.resize(displayWidth, displayHeight);
-        applicationData.renderer.recalculateProjectionMatrix();
     }
     return resizeRequired;
 }
