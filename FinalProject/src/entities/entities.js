@@ -20,7 +20,7 @@ let currentID = 1;
 export function createEntity(model, materials) {
     const entity = {
         model: model,
-        materials: materials,
+        materials: structuredClone(materials),
         id: currentID++,
         children: [],
         parent: null,

@@ -40,6 +40,9 @@ function renderScene(scene, ui, camera, light) {
     this.preparePicker();
     this.pickerShader.prepare(camera, light, projectionMatrix);
     renderEntity(this.pickerShader, scene);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    this.pickerShader.prepare2D();
+    renderEntity(this.pickerShader, ui);
 
     // Render to the screen
     this.prepareMain();

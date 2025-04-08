@@ -9,11 +9,12 @@
 import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { createEntity } from "./entities/entities.js";
-import { createQuad, setupQuad } from "./quad.js";
+import { createQuad, setupQuad } from "./ui/quad.js";
 import { loadPlants} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
+import { createButton } from "./ui/button.js";
 
 
 const applicationData = window.applicationData = {
@@ -42,12 +43,12 @@ window.onload = async function init()
 
     // Start the main loop
     setupFarmland();
-    const quad = createQuad(0.2, 1.0)
+    const quad = createQuad(0.2, 1.0, [92/255, 64/255, 51/255])
     quad.setParent(applicationData.uiScene);
     quad.transform.position = [0.8, 0, 0];
-    const quadTwo = createQuad(0.8, 0.15)
+    const quadTwo = createButton(0.9, 0.1, [1,1,1], () => console.log("Clicked"));
     quadTwo.setParent(quad);
-    quadTwo.transform.position = [-2, 0.5, 0];
+    quadTwo.setPosition({top: 0.1})
     mainLoop();
 };
 
@@ -86,6 +87,7 @@ function mainLoop() {
     applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
+    applicationData.uiScene.update(deltaTime);
     applicationData.camera.update(deltaTime);
     updateInputs();
     requestAnimationFrame(mainLoop);

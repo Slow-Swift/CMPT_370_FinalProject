@@ -4,7 +4,7 @@ import { createEntity } from "./entities/entities.js";
 let plantModels = {}
 
 export function createCorn() {
-    let corn = createEntity(...plantModels.corn[0]);
+    let corn = createEntity(...(plantModels.corn[0]));
     corn.stages = plantModels.corn;
     corn.stage = 0;
     corn.growthTime = 0;
@@ -31,6 +31,6 @@ async function loadPlant(plant) {
 function updatePlant(deltaTime) {
     this.growthTime += deltaTime;
     this.stage = Math.min(Math.floor((this.stages.length - 1) * this.growthTime / this.readyTime), this.stages.length - 1);
-    this.model = this.stages[this.stage];
+    this.model = this.stages[this.stage][0];
     this.ready = this.growthTime >= this.readyTime;
 }

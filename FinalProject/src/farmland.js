@@ -17,14 +17,19 @@ export function createFarmland(x, y) {
     farmland.transform.position = [2.5 * x, 0, 2.5 * y];
     farmland.location = [x,y];
     farmland.canInteract = canInteract;
+    farmland.baseColor = farmland.materials[0].color;
     return farmland;
 }
 
 function onUpdate() {
-    const baseScale = this.unlocked ? 1.0 : 0.4;
-    const scaleMultiplier = (this.mouseOver && this.canInteract()) ? 1.1 : 1.0;
+    let scale = this.unlocked ? 1.0 : 0.4;
+    this.materials[0].color = this.baseColor;
+    if (this.mouseOver && this.canInteract()) {
+        scale *= 1.1;
+        this.materials[0].color = [this.baseColor[0] * 2, this.baseColor[1] * 2, this.baseColor[2] * 2]
+    }
     if (this.plant) this.plant.mouseOver = this.mouseOver;
-    this.transform.scaleAll(baseScale * scaleMultiplier);
+    this.transform.scaleAll(scale);
 }
 
 function onClick() {
