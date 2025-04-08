@@ -63,9 +63,10 @@ function renderEntity(entity) {
     gl.bindVertexArray(entity.model.vao);
     
     for (const component of entity.model.components) {
-        gl.uniform3fv(this.uniforms.tintColor, component.material.color);
-        gl.uniform1f(this.uniforms.tintStrength, component.material.colorStrength);
-        gl.bindTexture(gl.TEXTURE_2D, component.material.texture);
+        const material = entity.materials[component.materialIndex];
+        gl.uniform3fv(this.uniforms.tintColor, material.color);
+        gl.uniform1f(this.uniforms.tintStrength, material.colorStrength);
+        gl.bindTexture(gl.TEXTURE_2D, material.texture);
         gl.drawElements(gl.TRIANGLES, component.vertexCount, gl.UNSIGNED_INT, 4 * component.startIndex);
     }
 }

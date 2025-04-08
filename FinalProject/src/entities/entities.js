@@ -17,9 +17,10 @@ let currentID = 1;
  * @param texture The texture for the model
  * @returns The created entity
  */
-export function createEntity(model) {
+export function createEntity(model, materials) {
     const entity = {
         model: model,
+        materials: materials,
         id: currentID++,
         children: [],
         parent: null,

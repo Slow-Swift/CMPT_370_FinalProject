@@ -22,11 +22,11 @@ export function setupQuad() {
         0, 3, 2,
         0, 2, 1
     ])
-   quadModel = createModels(quadIndices, quadVertices, quadTexture, [], [{material: {color: [92/255, 64/255, 51/255]}}]); 
+   quadModel = createModels(quadIndices, quadVertices, quadTexture, [], []); 
 }
 
 export function createQuad(width, height){
-    const quadEntity = createEntity(quadModel);
+    const quadEntity = createEntity(quadModel, [{color: [92/255, 64/255, 51/255]}]);
     quadEntity.transform.scale = [width, height, 1.0];
     return quadEntity;
 }
