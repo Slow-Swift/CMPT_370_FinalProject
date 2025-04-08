@@ -4,7 +4,7 @@ import { createEntity } from "./entities/entities.js";
 let plantModels = {}
 
 export function createCorn() {
-    let corn = createEntity(plantModels.corn[0]);
+    let corn = createEntity(...plantModels.corn[0]);
     corn.stages = plantModels.corn;
     corn.stage = 0;
     corn.growthTime = 0;

@@ -3,14 +3,14 @@ import { loadObj } from "./entities/objParser.js";
 import { unlockFarmland } from "./farmlandManager.js";
 import { createCorn } from "./plant.js";
 
-let farmlandModel;
+let farmlandModelData;
 
 export async function loadFarmlandModel() {
-    farmlandModel = await loadObj("objects/farmland.obj")
+    farmlandModelData = await loadObj("objects/farmland.obj")
 }
 
 export function createFarmland(x, y) {
-    let farmland = createEntity(farmlandModel);
+    let farmland = createEntity(...farmlandModelData);
     farmland.onClick = onClick;
     farmland.onUpdate = onUpdate;
     farmland.unlocked = false;

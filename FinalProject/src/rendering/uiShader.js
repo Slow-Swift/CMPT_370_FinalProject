@@ -46,8 +46,8 @@ function renderEntity(entity) {
     gl.uniform1f(this.uniforms.mouseOver, entity.mouseOver ? 1 : 0);
     gl.bindVertexArray(entity.model.vao);
    
-    gl.uniform3fv(this.uniforms.tintColor, entity.model.components[0].material.color);
-    gl.uniform1f(this.uniforms.tintStrength, entity.model.components[0].material.colorStrength);
-    gl.bindTexture(gl.TEXTURE_2D, entity.model.components[0].material.texture);
+    gl.uniform3fv(this.uniforms.tintColor, entity.materials[0].color);
+    gl.uniform1f(this.uniforms.tintStrength, entity.materials[0].colorStrength);
+    gl.bindTexture(gl.TEXTURE_2D, entity.materials[0].texture);
     gl.drawElements(gl.TRIANGLES, entity.model.vertexCount, gl.UNSIGNED_INT, 0);
 }
