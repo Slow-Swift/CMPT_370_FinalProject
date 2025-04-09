@@ -9,11 +9,12 @@
 import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { createEntity } from "./entities/entities.js";
-import { createQuad, setupQuad } from "./quad.js";
-import { loadPlants} from "./plant.js";
+import { createQuad, setupQuad } from "./ui/quad.js";
+import { createCorn, createPumpkin, loadPlants} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
+import { createButton } from "./ui/button.js";
 
 
 const applicationData = window.applicationData = {
@@ -22,8 +23,10 @@ const applicationData = window.applicationData = {
 };
 
 applicationData.light = {
-    position: [200, 200, 0],
-    color: [1,1,1]
+    position: [0, 250, 200],
+    ambient: [0.05,0.05,0.05],
+    diffuse: [1,1,1],
+    specular: [0.2,0.2,0.2]
 };
 
 /**
@@ -42,12 +45,23 @@ window.onload = async function init()
 
     // Start the main loop
     setupFarmland();
-    const quad = createQuad(0.2, 1.0)
-    quad.setParent(applicationData.uiScene);
-    quad.transform.position = [0.8, 0, 0];
-    const quadTwo = createQuad(0.8, 0.15)
-    quadTwo.setParent(quad);
-    quadTwo.transform.position = [-2, 0.5, 0];
+    applicationData.sidePanel = createQuad(0.2, 1.0, [92/255, 64/255, 51/255])
+    applicationData.sidePanel.setParent(applicationData.uiScene);
+    applicationData.sidePanel.setPosition({left: 4})
+    const cornBtn = createButton(0.9, 0.1, [1,1,1], () => {
+        applicationData.selectedFarmland?.plantCrop(createCorn());
+        applicationData.sidePanel.setPosition({left: 1});
+        applicationData.selectedFarmland = null;
+    });
+    cornBtn.setParent(applicationData.sidePanel);
+    cornBtn.setPosition({top: 0.02})
+    const pumpkinBtn = createButton(0.9, 0.1, [1,1,1], () => {
+        applicationData.selectedFarmland?.plantCrop(createPumpkin());
+        applicationData.sidePanel.setPosition({left: 1});
+        applicationData.selectedFarmland = null;
+    });
+    pumpkinBtn.setParent(applicationData.sidePanel);
+    pumpkinBtn.setPosition({top: 0.14})
     mainLoop();
 };
 
@@ -86,6 +100,7 @@ function mainLoop() {
     applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
+    applicationData.uiScene.update(deltaTime);
     applicationData.camera.update(deltaTime);
     updateInputs();
     requestAnimationFrame(mainLoop);

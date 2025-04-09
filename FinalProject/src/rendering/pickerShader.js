@@ -25,6 +25,7 @@ export async function loadPickerShader() {
             projectionMatrix: gl.getUniformLocation(shaderProgram, "projectionMatrix"),
         },
         prepare: prepare,
+        prepare2D: prepare2D,
         renderEntity: renderEntity
     };
 
@@ -38,6 +39,12 @@ function prepare(camera, light, projectionMatrix) {
     gl.useProgram(this.program);
     gl.uniformMatrix4fv(this.uniforms.projectionMatrix, false, flatten(projectionMatrix));
     gl.uniformMatrix4fv(this.uniforms.viewMatrix, false, flatten(camera.getViewMatrix()));
+}
+
+function prepare2D() {
+    gl.useProgram(this.program);
+    gl.uniformMatrix4fv(this.uniforms.projectionMatrix, false, flatten(mat4()));
+    gl.uniformMatrix4fv(this.uniforms.viewMatrix, false, flatten(mat4()));
 }
 
 /**

@@ -3,28 +3,34 @@ import { loadObj } from "./entities/objParser.js";
 import { unlockFarmland } from "./farmlandManager.js";
 import { createCorn } from "./plant.js";
 
-let farmlandModel;
+let farmlandModelData;
 
 export async function loadFarmlandModel() {
-    farmlandModel = await loadObj("objects/farmland.obj")
+    farmlandModelData = await loadObj("objects/farmland.obj")
 }
 
 export function createFarmland(x, y) {
-    let farmland = createEntity(farmlandModel);
+    let farmland = createEntity(...farmlandModelData);
+    console.log(farmland);
     farmland.onClick = onClick;
     farmland.onUpdate = onUpdate;
     farmland.unlocked = false;
     farmland.transform.position = [2.5 * x, 0, 2.5 * y];
     farmland.location = [x,y];
     farmland.canInteract = canInteract;
+    farmland.plantCrop = plantCrop;
     return farmland;
 }
 
 function onUpdate() {
-    const baseScale = this.unlocked ? 1.0 : 0.4;
-    const scaleMultiplier = (this.mouseOver && this.canInteract()) ? 1.1 : 1.0;
+    let scale = this.unlocked ? 1.0 : 0.4;
+    this.materials[0].emissive = [0,0,0];
+    if (this.mouseOver && this.canInteract() || applicationData.selectedFarmland == this) {
+        scale *= 1.1;
+        this.materials[0].emissive = [0.1, 0.1, 0.0];
+    }
     if (this.plant) this.plant.mouseOver = this.mouseOver;
-    this.transform.scaleAll(baseScale * scaleMultiplier);
+    this.transform.scaleAll(scale);
 }
 
 function onClick() {
@@ -38,7 +44,15 @@ function onClick() {
             this.plant = null;
         }
     } else {
-        this.plant = createCorn();
+        applicationData.selectedFarmland = this;
+        applicationData.sidePanel.setPosition({right: 0});
+    }
+}
+
+function plantCrop(crop) {
+    if (!this.plant) {
+        this.plant = crop;
+        this.plant.transform.rotation[1] = 90 * Math.floor(Math.random() * 4);
         this.plant.setParent(this);
     }
 }

@@ -82,23 +82,25 @@ export async function loadObj(file, useMaterials=true) {
     }
 
     // Load the materials
-    if (useMaterials && objData.materialFile) {
+    let materials = [];
+    if (objData.materialFile) {
         const materialFile = file.substring(0, file.lastIndexOf('/') + 1) + objData.materialFile;
-        const materials = await parseMaterialFile(materialFile);
+        let materialNames;
+        [materials, materialNames] = await parseMaterialFile(materialFile);
         for (const component of objData.components) {
-            component.material = materials[component.materialName];
+            component.materialIndex = materialNames[component.materialName];
             delete component.materialName;
         }
     } 
     
     // Replace this with a call to your own create entity/model/object function
-    return createModels(
+    return [createModels(
         objData.indices, 
         objData.vertices, 
         objData.orderedTextureCoords, 
         objData.orderedNormals, 
         objData.components
-    );
+    ), materials];
 }
 
 /**
@@ -132,7 +134,8 @@ async function parseMaterialFile(file) {
     const objFile = await loadFile(file);
     const lines = objFile.split('\n');
 
-    const materials = {};
+    const materials = [];
+    const materialNames = {};
     let currentMaterial;
 
     for (const line of lines) {
@@ -140,23 +143,40 @@ async function parseMaterialFile(file) {
 
         switch (prefix) {
             case "newmtl":  // Add a new material
-                materials[data[0]] = currentMaterial = {
-                    color: [0,0,0],
-                    colorStrength: 1
+                currentMaterial = {
+                    ambient: [1,1,1],
+                    diffuse: [1,1,1],
+                    specular: [1,1,1],
+                    emissive: [0,0,0],
+                    shininess: [0,0,0],
+                    hasTexture: false
                 };
+                materialNames[data[0]] = materials.length;
+                materials.push(currentMaterial);
                 break;
-            case "Kd":      // Set the material color (This is probably grey if there is a texture)
-                currentMaterial.color = [Number(data[0]), Number(data[1]), Number(data[2])];
+            case "Ka":      
+                currentMaterial.ambient = [Number(data[0]), Number(data[1]), Number(data[2])];
+                break  
+            case "Kd": 
+                currentMaterial.diffuse = [Number(data[0]), Number(data[1]), Number(data[2])];
+                break  
+            case "Kd":      
+                currentMaterial.specular = [Number(data[0]), Number(data[1]), Number(data[2])];
+                break  
+            case "Ke":    
+                currentMaterial.emissive = [Number(data[0]), Number(data[1]), Number(data[2])];
+                break  
+            case "Ns":     
+                currentMaterial.shininess = Number(data[0]);
                 break  
             case "map_Kd":  // Set the material texture 
                 const filename = data[0].split('/').pop();
                 // Replace this with a call to your load texture function
                 currentMaterial.texture = loadTexture(IMAGE_FOLDER + filename); 
-                currentMaterial.colorStrength = 0;
+                currentMaterial.hasTexture = true;
                 break;
-            // Handle more prefixes here if you want more complex materials
         }
     }
 
-    return materials;
+    return [materials, materialNames];
 }

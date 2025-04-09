@@ -17,9 +17,10 @@ let currentID = 1;
  * @param texture The texture for the model
  * @returns The created entity
  */
-export function createEntity(model) {
+export function createEntity(model, materials) {
     const entity = {
         model: model,
+        materials: structuredClone(materials),
         id: currentID++,
         children: [],
         parent: null,
@@ -89,7 +90,7 @@ function update(deltaTime) {
     if (this.pickable) {
         this.mouseOver = applicationData.mouseID == this.id;
         if (this.mouseOver && inputData.mouse.clicked) {
-            this.onClick();
+            this.onClick?.();
         }
     }
     
