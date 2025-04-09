@@ -10,7 +10,7 @@ import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { createEntity } from "./entities/entities.js";
 import { createQuad, setupQuad } from "./ui/quad.js";
-import { createCorn, createPumpkin, loadPlants} from "./plant.js";
+import { createCorn, createPlant, createPumpkin, loadPlants, plantTypes} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
@@ -49,19 +49,26 @@ window.onload = async function init()
     applicationData.sidePanel.setParent(applicationData.uiScene);
     applicationData.sidePanel.setPosition({left: 4})
     const cornBtn = createButton(0.9, 0.1, [1,1,1], () => {
-        applicationData.selectedFarmland?.plantCrop(createCorn());
+        applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.CORN));
         applicationData.sidePanel.setPosition({left: 1});
         applicationData.selectedFarmland = null;
     });
     cornBtn.setParent(applicationData.sidePanel);
     cornBtn.setPosition({top: 0.02})
     const pumpkinBtn = createButton(0.9, 0.1, [1,1,1], () => {
-        applicationData.selectedFarmland?.plantCrop(createPumpkin());
+        applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.PUMPKIN));
         applicationData.sidePanel.setPosition({left: 1});
         applicationData.selectedFarmland = null;
     });
     pumpkinBtn.setParent(applicationData.sidePanel);
     pumpkinBtn.setPosition({top: 0.14})
+    const wheatBtn = createButton(0.9, 0.1, [1,1,1], () => {
+        applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.WHEAT));
+        applicationData.sidePanel.setPosition({left: 1});
+        applicationData.selectedFarmland = null;
+    });
+    wheatBtn.setParent(applicationData.sidePanel);
+    wheatBtn.setPosition({top: 0.26})
     mainLoop();
 };
 

@@ -43,4 +43,8 @@ function setPosition(position) {
         this.transform.position[0] = -(1 - position.left *2- this.transform.scale[0]);
     if ("right" in position)
         this.transform.position[0] = 1 - position.right *2- this.transform.scale[0];
+    if ("x" in position)
+        this.transform.position[0] = position.x * 2;
+    if ("y" in position)
+        this.transform.position[1] = position.y * 2;
 }

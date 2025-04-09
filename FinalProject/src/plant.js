@@ -3,6 +3,22 @@ import { createEntity } from "./entities/entities.js";
 
 let plantModels = {}
 
+export const plantTypes = {
+    WHEAT: "wheat",
+    CORN: "corn",
+    PUMPKIN: "pumpkin",
+}
+
+export function createPlant(plantType) {
+    const plant = createEntity(...(plantModels[plantType][0]));
+    plant.stages = plantModels[plantType];
+    plant.growthTime = 0;
+    plant.readyTime = 10;
+    plant.pickable = false;
+    plant.onUpdate = updatePlant;
+    return plant;
+}
+
 export function createCorn() {
     let corn = createEntity(...(plantModels.corn[0]));
     corn.stages = plantModels.corn;
@@ -26,8 +42,9 @@ export function createPumpkin() {
 }
 
 export async function loadPlants() {
-    plantModels.corn = await loadPlant("corn");
-    plantModels.pumpkin = await loadPlant("pumpkin");
+    for (const plantType in plantTypes) {
+        plantModels[plantTypes[plantType]] = await loadPlant(plantTypes[plantType]);
+    }
 }
 
 async function loadPlant(plant) {
@@ -44,5 +61,6 @@ function updatePlant(deltaTime) {
     this.growthTime += deltaTime;
     this.stage = Math.min(Math.floor((this.stages.length - 1) * this.growthTime / this.readyTime), this.stages.length - 1);
     this.model = this.stages[this.stage][0];
+    this.materials = this.stages[this.stage][1];
     this.ready = this.growthTime >= this.readyTime;
 }
