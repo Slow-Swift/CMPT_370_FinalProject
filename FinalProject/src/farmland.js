@@ -11,22 +11,23 @@ export async function loadFarmlandModel() {
 
 export function createFarmland(x, y) {
     let farmland = createEntity(...farmlandModelData);
+    console.log(farmland);
     farmland.onClick = onClick;
     farmland.onUpdate = onUpdate;
     farmland.unlocked = false;
     farmland.transform.position = [2.5 * x, 0, 2.5 * y];
     farmland.location = [x,y];
     farmland.canInteract = canInteract;
-    farmland.baseColor = farmland.materials[0].color;
+    farmland.plantCrop = plantCrop;
     return farmland;
 }
 
 function onUpdate() {
     let scale = this.unlocked ? 1.0 : 0.4;
-    this.materials[0].color = this.baseColor;
-    if (this.mouseOver && this.canInteract()) {
+    this.materials[0].emissive = [0,0,0];
+    if (this.mouseOver && this.canInteract() || applicationData.selectedFarmland == this) {
         scale *= 1.1;
-        this.materials[0].color = [this.baseColor[0] * 2, this.baseColor[1] * 2, this.baseColor[2] * 2]
+        this.materials[0].emissive = [0.1, 0.1, 0.0];
     }
     if (this.plant) this.plant.mouseOver = this.mouseOver;
     this.transform.scaleAll(scale);
@@ -43,7 +44,15 @@ function onClick() {
             this.plant = null;
         }
     } else {
-        this.plant = createCorn();
+        applicationData.selectedFarmland = this;
+        applicationData.sidePanel.setPosition({right: 0});
+    }
+}
+
+function plantCrop(crop) {
+    if (!this.plant) {
+        this.plant = crop;
+        this.plant.transform.rotation[1] = 90 * Math.floor(Math.random() * 4);
         this.plant.setParent(this);
     }
 }

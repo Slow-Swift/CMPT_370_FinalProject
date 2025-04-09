@@ -144,22 +144,37 @@ async function parseMaterialFile(file) {
         switch (prefix) {
             case "newmtl":  // Add a new material
                 currentMaterial = {
-                    color: [0,0,0],
-                    colorStrength: 1
+                    ambient: [1,1,1],
+                    diffuse: [1,1,1],
+                    specular: [1,1,1],
+                    emissive: [0,0,0],
+                    shininess: [0,0,0],
+                    hasTexture: false
                 };
                 materialNames[data[0]] = materials.length;
                 materials.push(currentMaterial);
                 break;
-            case "Kd":      // Set the material color (This is probably grey if there is a texture)
-                currentMaterial.color = [Number(data[0]), Number(data[1]), Number(data[2])];
+            case "Ka":      
+                currentMaterial.ambient = [Number(data[0]), Number(data[1]), Number(data[2])];
+                break  
+            case "Kd": 
+                currentMaterial.diffuse = [Number(data[0]), Number(data[1]), Number(data[2])];
+                break  
+            case "Kd":      
+                currentMaterial.specular = [Number(data[0]), Number(data[1]), Number(data[2])];
+                break  
+            case "Ke":    
+                currentMaterial.emissive = [Number(data[0]), Number(data[1]), Number(data[2])];
+                break  
+            case "Ns":     
+                currentMaterial.shininess = Number(data[0]);
                 break  
             case "map_Kd":  // Set the material texture 
                 const filename = data[0].split('/').pop();
                 // Replace this with a call to your load texture function
                 currentMaterial.texture = loadTexture(IMAGE_FOLDER + filename); 
-                currentMaterial.colorStrength = 0;
+                currentMaterial.hasTexture = true;
                 break;
-            // Handle more prefixes here if you want more complex materials
         }
     }
 

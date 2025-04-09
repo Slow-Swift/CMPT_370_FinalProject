@@ -90,7 +90,7 @@ function update(deltaTime) {
     if (this.pickable) {
         this.mouseOver = applicationData.mouseID == this.id;
         if (this.mouseOver && inputData.mouse.clicked) {
-            this.onClick();
+            this.onClick?.();
         }
     }
     

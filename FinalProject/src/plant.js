@@ -14,8 +14,20 @@ export function createCorn() {
     return corn;
 }
 
+export function createPumpkin() {
+    let pumpkin = createEntity(...(plantModels.pumpkin[0]));
+    pumpkin.stages = plantModels.pumpkin;
+    pumpkin.stage = 0;
+    pumpkin.growthTime = 0;
+    pumpkin.readyTime = 10;
+    pumpkin.pickable = false;
+    pumpkin.onUpdate = updatePlant;
+    return pumpkin;
+}
+
 export async function loadPlants() {
     plantModels.corn = await loadPlant("corn");
+    plantModels.pumpkin = await loadPlant("pumpkin");
 }
 
 async function loadPlant(plant) {

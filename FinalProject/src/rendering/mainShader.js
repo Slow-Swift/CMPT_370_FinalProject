@@ -28,10 +28,17 @@ export async function loadMainShader() {
             viewMatrix: gl.getUniformLocation(shaderProgram, "viewMatrix"),
             projectionMatrix: gl.getUniformLocation(shaderProgram, "projectionMatrix"),
             lightPosition: gl.getUniformLocation(shaderProgram, "lightPosition"),
-            lightColor: gl.getUniformLocation(shaderProgram, "lightColor"),
-            tintColor: gl.getUniformLocation(shaderProgram, "tintColor"),
-            tintStrength: gl.getUniformLocation(shaderProgram, "tintStrength"),
-            mouseOver: gl.getUniformLocation(shaderProgram, "mouseOver"),
+            
+            ambientLight: gl.getUniformLocation(shaderProgram, "ambientLight"),
+            diffuseLight: gl.getUniformLocation(shaderProgram, "diffuseLight"),
+            specularLight: gl.getUniformLocation(shaderProgram, "specularLight"),
+            
+            ambientColor: gl.getUniformLocation(shaderProgram, "ambientColor"),
+            diffuseColor: gl.getUniformLocation(shaderProgram, "diffuseColor"),
+            specularColor: gl.getUniformLocation(shaderProgram, "specularColor"),
+            emissiveColor: gl.getUniformLocation(shaderProgram, "emissiveColor"),
+            shininess: gl.getUniformLocation(shaderProgram, "shininess"),
+            useTexture: gl.getUniformLocation(shaderProgram, "useTexture"),
         },
         prepare: prepare,
         renderEntity: renderEntity
@@ -47,8 +54,10 @@ function prepare(camera, light, projectionMatrix) {
     gl.useProgram(this.program);
     gl.uniformMatrix4fv(this.uniforms.projectionMatrix, false, flatten(projectionMatrix));
     gl.uniformMatrix4fv(this.uniforms.viewMatrix, false, flatten(camera.getViewMatrix()));
-    gl.uniform3f(this.uniforms.lightPosition, light.position[0], light.position[1], light.position[2]);
-    gl.uniform3f(this.uniforms.lightColor, light.color[0], light.color[1], light.color[2]);
+    gl.uniform3fv(this.uniforms.ambientLight, light.ambient);
+    gl.uniform3fv(this.uniforms.diffuseLight, light.diffuse);
+    gl.uniform3fv(this.uniforms.specularLight, light.specular);
+    gl.uniform3fv(this.uniforms.lightPosition, light.position);
 }
 
 /**
@@ -59,13 +68,16 @@ function renderEntity(entity) {
     gl.activeTexture(gl.TEXTURE0);
     gl.uniform1i(this.uniforms.texture, 0);
     gl.uniformMatrix4fv(this.uniforms.transformationMatrix, false, flatten(entity.transform.getTransformationMatrix()));
-    gl.uniform1f(this.uniforms.mouseOver, entity.mouseOver ? 1 : 0);
     gl.bindVertexArray(entity.model.vao);
     
     for (const component of entity.model.components) {
         const material = entity.materials[component.materialIndex];
-        gl.uniform3fv(this.uniforms.tintColor, material.color);
-        gl.uniform1f(this.uniforms.tintStrength, material.colorStrength);
+        gl.uniform3fv(this.uniforms.ambientColor, material.ambient);
+        gl.uniform3fv(this.uniforms.diffuseColor, material.diffuse);
+        gl.uniform3fv(this.uniforms.specularColor, material.specular);
+        gl.uniform3fv(this.uniforms.emissiveColor, material.emissive);
+        gl.uniform1f(this.uniforms.shininess, material.shininess);
+        gl.uniform1f(this.uniforms.useTexture, material.useTexture ? 1 : 0);
         gl.bindTexture(gl.TEXTURE_2D, material.texture);
         gl.drawElements(gl.TRIANGLES, component.vertexCount, gl.UNSIGNED_INT, 4 * component.startIndex);
     }

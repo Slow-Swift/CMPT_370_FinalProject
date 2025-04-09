@@ -35,12 +35,12 @@ export function createQuad(width, height, color){
 }
 
 function setPosition(position) {
-    if (position.top)
-        this.transform.position[1] = 1 - position.top / 2- this.transform.scale[1];
-    if (position.bottom)
-        this.transform.position[1] = -(1 - position.bottom / 2- this.transform.scale[1]);
-    if (position.left)
-        this.transform.position[0] = -(1 - position.left / 2- this.transform.scale[0]);
-    if (position.right)
-        this.transform.position[0] = 1 - position.right / 2- this.transform.scale[0];
+    if ("top" in position)
+        this.transform.position[1] = 1 - position.top *2- this.transform.scale[1];
+    if ("bottom" in position)
+        this.transform.position[1] = -(1 - position.bottom *2- this.transform.scale[1]);
+    if ("left" in position)
+        this.transform.position[0] = -(1 - position.left *2- this.transform.scale[0]);
+    if ("right" in position)
+        this.transform.position[0] = 1 - position.right *2- this.transform.scale[0];
 }
