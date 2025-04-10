@@ -1,21 +1,21 @@
 import { createModels } from "../entities/models.js";
-import { createEntity } from "../entities/entities.js";
+import { createEntity2D } from "../entities/entities.js";
 
 let quadModel;
 
 export function setupQuad() {
     const quadVertices = new Float32Array([
-    -1.0, -1.0, 0.0,
-    -1.0, 1.0, 0.0,
+    0, 0, 0.0,
+    0, 1.0, 0.0,
     1.0, 1.0, 0.0,
-    1.0, -1.0, 0.0,
+    1.0, 0, 0.0,
     ]);
     
     const quadTexture = new Float32Array([
-        0.0, 0.0,
         0.0, 1.0,
-        1.0, 1.1,
-        1.0, 0.0
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0
     ])
 
     const quadIndices = new Int32Array ([
@@ -25,22 +25,15 @@ export function setupQuad() {
    quadModel = createModels(quadIndices, quadVertices, quadTexture, [], []); 
 }
 
-export function createQuad(width, height, color){
-    const quadEntity = createEntity(quadModel, [{color: color}]);
-    quadEntity.transform.scale = [width, height, 1.0];
-    quadEntity.transform.position[2] = -0.1;
-    quadEntity.setPosition = setPosition;
-    quadEntity.size = [width, height];
+export function createQuad(width, height, color, {aspectRatio=0, texture=null, anchor=[0.5, 0.5], position=[0.5, 0.5], pickable=true}={}){
+    const quadEntity = createEntity2D(quadModel, [{color: color}]);
+    quadEntity.transform.width = width;
+    quadEntity.transform.height = height;
+    quadEntity.transform.aspectRatio = aspectRatio;
+    quadEntity.transform.anchor = anchor;
+    quadEntity.transform.position = position;
+    quadEntity.materials[0].texture = texture;
+    quadEntity.materials[0].useTexture = texture != null;
+    quadEntity.pickable = pickable;
     return quadEntity;
-}
-
-function setPosition(position) {
-    if ("top" in position)
-        this.transform.position[1] = 1 - position.top *2- this.transform.scale[1];
-    if ("bottom" in position)
-        this.transform.position[1] = -(1 - position.bottom *2- this.transform.scale[1]);
-    if ("left" in position)
-        this.transform.position[0] = -(1 - position.left *2- this.transform.scale[0]);
-    if ("right" in position)
-        this.transform.position[0] = 1 - position.right *2- this.transform.scale[0];
 }

@@ -17,9 +17,8 @@ export async function loadUIShader() {
         uniforms: {
             texture: gl.getUniformLocation(shaderProgram, "image"),
             transformationMatrix: gl.getUniformLocation(shaderProgram, "transformationMatrix"),
-            tintColor: gl.getUniformLocation(shaderProgram, "tintColor"),
-            tintStrength: gl.getUniformLocation(shaderProgram, "tintStrength"),
-            mouseOver: gl.getUniformLocation(shaderProgram, "mouseOver"),
+            tintColor: gl.getUniformLocation(shaderProgram, "color"),
+            useTexture: gl.getUniformLocation(shaderProgram, "useTexture"),
         },
         prepare: prepare,
         renderEntity: renderEntity
@@ -42,12 +41,11 @@ function prepare() {
 function renderEntity(entity) {
     gl.activeTexture(gl.TEXTURE0);
     gl.uniform1i(this.uniforms.texture, 0);
+    gl.uniform1f(this.uniforms.useTexture, entity.materials[0].useTexture ? 1 : 0);
     gl.uniformMatrix4fv(this.uniforms.transformationMatrix, false, flatten(entity.transform.getTransformationMatrix()));
-    gl.uniform1f(this.uniforms.mouseOver, entity.mouseOver ? 1 : 0);
     gl.bindVertexArray(entity.model.vao);
    
     gl.uniform3fv(this.uniforms.tintColor, entity.materials[0].color);
-    gl.uniform1f(this.uniforms.tintStrength, entity.materials[0].colorStrength);
     gl.bindTexture(gl.TEXTURE_2D, entity.materials[0].texture);
     gl.drawElements(gl.TRIANGLES, entity.model.vertexCount, gl.UNSIGNED_INT, 0);
 }

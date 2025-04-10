@@ -6,6 +6,8 @@
  *   Creates entities that may be rendered by a shader
  */
 
+import { createTransform2D } from "../ui/transform2d.js";
+
 
 let currentID = 1;
 
@@ -31,6 +33,30 @@ export function createEntity(model, materials) {
     entity.transform = createTransform(entity);
     return entity;
 }
+
+/**
+ * Create a new entity given the indices, vertices, and texture coordinates
+ * @param indices The indices of the model
+ * @param vertices The vertex positions
+ * @param textureCoords The texture coordinates for each vertex
+ * @param texture The texture for the model
+ * @returns The created entity
+ */
+export function createEntity2D(model, materials) {
+    const entity = {
+        model: model,
+        materials: structuredClone(materials),
+        id: currentID++,
+        children: [],
+        parent: null,
+        pickable: true,
+        setParent: setParent,
+        update: update
+    }
+    entity.transform = createTransform2D(entity);
+    return entity;
+}
+
 /**
  * Create a copy of the entity that has the same model
  * @param entity The entity to copy
