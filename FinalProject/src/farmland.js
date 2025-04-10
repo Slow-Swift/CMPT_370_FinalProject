@@ -1,6 +1,7 @@
 import { createEntity } from "./entities/entities.js";
 import { loadObj } from "./entities/objParser.js";
 import { unlockFarmland } from "./farmlandManager.js";
+import { createPlant } from "./plant.js";
 
 let farmlandModelData;
 
@@ -43,14 +44,13 @@ function onClick() {
             this.plant = null;
         }
     } else {
-        applicationData.selectedFarmland = this;
-        applicationData.sidePanel.transform.anchor = [1,1];
+        this.plantCrop(applicationData.selectedCrop)
     }
 }
 
 function plantCrop(crop) {
     if (!this.plant) {
-        this.plant = crop;
+        this.plant = createPlant(crop);
         this.plant.transform.rotation[1] = 90 * Math.floor(Math.random() * 4);
         this.plant.setParent(this);
     }

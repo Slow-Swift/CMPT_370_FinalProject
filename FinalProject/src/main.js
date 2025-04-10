@@ -49,37 +49,36 @@ window.onload = async function init()
 
     // Start the main loop
     setupFarmland();
-    applicationData.sidePanel = createQuad(0.2, 1.0, [92/255, 64/255, 51/255]);
-    applicationData.sidePanel.setParent(applicationData.uiScene);
-    applicationData.sidePanel.transform.anchor = [1,1];
-    applicationData.sidePanel.transform.position = [1,1];
-    const cornBtn = createButton(0.9, 0.1, [1,1,1], () => {
-        applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.CORN));
-        applicationData.sidePanel.transform.anchor = [0,1];
-        applicationData.selectedFarmland = null;
-    });
-    cornBtn.setParent(applicationData.sidePanel);
-    cornBtn.transform.anchor = [0.5, 0.5];
-    cornBtn.transform.position = [0.5, 0.93];
-    const pumpkinBtn = createButton(0.9, 0.1, [1,1,1], () => {
-        applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.PUMPKIN));
-        applicationData.sidePanel.transform.anchor = [0,1];
-        applicationData.selectedFarmland = null;
-    });
-    pumpkinBtn.setParent(applicationData.sidePanel);
-    pumpkinBtn.transform.anchor = [0.5, 0.5];
-    pumpkinBtn.transform.position = [0.5, 0.81];
-    const wheatBtn = createButton(0.9, 0.1, [1,1,1], () => {
-        applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.WHEAT));
-        applicationData.sidePanel.transform.anchor = [0,1];
-        applicationData.selectedFarmland = null;
-    });
-    wheatBtn.setParent(applicationData.sidePanel);
-    wheatBtn.transform.anchor = [0.5, 0.5];
-    wheatBtn.transform.position = [0.5, 0.69];
+    // applicationData.sidePanel = createQuad(0.2, 1.0, [92/255, 64/255, 51/255]);
+    // applicationData.sidePanel.setParent(applicationData.uiScene);
+    // applicationData.sidePanel.transform.anchor = [1,1];
+    // applicationData.sidePanel.transform.position = [1,1];
+    // const cornBtn = createButton(0.9, 0.1, [1,1,1], () => {
+    //     applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.CORN));
+    //     applicationData.sidePanel.transform.anchor = [0,1];
+    //     applicationData.selectedFarmland = null;
+    // });
+    // cornBtn.setParent(applicationData.sidePanel);
+    // cornBtn.transform.anchor = [0.5, 0.5];
+    // cornBtn.transform.position = [0.5, 0.93];
+    // const pumpkinBtn = createButton(0.9, 0.1, [1,1,1], () => {
+    //     applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.PUMPKIN));
+    //     applicationData.sidePanel.transform.anchor = [0,1];
+    //     applicationData.selectedFarmland = null;
+    // });
+    // pumpkinBtn.setParent(applicationData.sidePanel);
+    // pumpkinBtn.transform.anchor = [0.5, 0.5];
+    // pumpkinBtn.transform.position = [0.5, 0.81];
+    // const wheatBtn = createButton(0.9, 0.1, [1,1,1], () => {
+    //     applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.WHEAT));
+    //     applicationData.sidePanel.transform.anchor = [0,1];
+    //     applicationData.selectedFarmland = null;
+    // });
+    // wheatBtn.setParent(applicationData.sidePanel);
+    // wheatBtn.transform.anchor = [0.5, 0.5];
+    // wheatBtn.transform.position = [0.5, 0.69];
 
-    const testBtn = createQuad(0.1, 0.1, [1,1,1], {aspectRatio: 1, texture: loadTexture("images/icons/pumpkinIcon.png")})
-    testBtn.setParent(applicationData.uiScene);
+    createUI();
 
     mainLoop();
 };
@@ -98,13 +97,69 @@ function initialize_gl() {
     // Enable backface culling
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
 
 async function loadModels() {
     await loadPlants();
     await loadFarmlandModel();
     setupQuad();
+}
+
+function createUI() {
+    const cornTexture = loadTexture("images/icons/cornIcon.png");
+    const pumpkinTexture = loadTexture("images/icons/pumpkinIcon.png");
+    const wheatTexture = loadTexture("images/icons/wheatIcon.png");
+    const slotTexture = loadTexture("images/slot.png");
+
+    const cropPicker = createButton(
+        0.05, 0, [1,1,1], () => selectors.transform.scale = 1 - selectors.transform.scale, {aspectRatio: 1, texture: slotTexture,
+        position: [0.95, 0.1]
+    });
+    cropPicker.setParent(applicationData.uiScene);
+    const selectedCropImg = createQuad(.8, .8, [1,1,1], {texture: cornTexture, pickable:false});
+    selectedCropImg.setParent(cropPicker);
+
+    const selectors = createEntity2D();
+    selectors.transform.width = 0.05;
+    selectors.transform.aspectRatio = 1;
+    selectors.transform.position = [0.95, 0.1];
+    selectors.transform.scale = 0;
+
+    selectors.setParent(applicationData.uiScene);
+
+    applicationData.selectedCrop = plantTypes.CORN;
+    const cornBtn = createButton(
+        1, 1, [1,1,1], () => {
+            selectors.transform.scale = 0;
+            applicationData.selectedCrop = plantTypes.CORN;
+            selectedCropImg.materials[0].texture = cornTexture;
+        }, {texture: slotTexture,
+        position: [0.5, 1.7]
+    });
+    cornBtn.setParent(selectors);
+    createQuad(.8, .8, [1,1,1], {texture: cornTexture, pickable:false}).setParent(cornBtn);
+    
+    const pumpkinBtn = createButton(
+        1, 1, [1,1,1], () => {
+            selectors.transform.scale = 0;
+            applicationData.selectedCrop = plantTypes.PUMPKIN;
+            selectedCropImg.materials[0].texture = pumpkinTexture;
+        }, {texture: slotTexture,
+        position: [0.5, 2.8]
+    });
+    pumpkinBtn.setParent(selectors);
+    createQuad(.8, .8, [1,1,1], {texture: pumpkinTexture, pickable:false}).setParent(pumpkinBtn);
+
+    const wheatBtn = createButton(
+        1, 1, [1,1,1], () => {
+            selectors.transform.scale = 0;
+            applicationData.selectedCrop = plantTypes.WHEAT;
+            selectedCropImg.materials[0].texture = wheatTexture;
+        }, {texture: slotTexture,
+        position: [0.5, 3.9]
+    });
+    wheatBtn.setParent(selectors);
+    createQuad(.8, .8, [1,1,1], {texture: wheatTexture, pickable:false}).setParent(wheatBtn);
 }
 
 /**
