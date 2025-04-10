@@ -11,7 +11,6 @@ export async function loadFarmlandModel() {
 
 export function createFarmland(x, y) {
     let farmland = createEntity(...farmlandModelData);
-    console.log(farmland);
     farmland.onClick = onClick;
     farmland.onUpdate = onUpdate;
     farmland.unlocked = false;
@@ -36,15 +35,18 @@ function onUpdate() {
 function onClick() {
     if (!this.unlocked) {
         unlockFarmland(this);
+        applicationData.unlockSounds[Math.floor(Math.random() * applicationData.unlockSounds.length)].play();
         return;
     }
     if (this.plant) {
         if (this.plant.ready) {
             this.plant.setParent(null);
             this.plant = null;
+            applicationData.harvestSounds[Math.floor(Math.random() * applicationData.harvestSounds.length)].play();
         }
     } else {
-        this.plantCrop(applicationData.selectedCrop)
+        this.plantCrop(applicationData.selectedCrop);
+        applicationData.plantSounds[Math.floor(Math.random() * applicationData.plantSounds.length)].play();
     }
 }
 
