@@ -19,28 +19,6 @@ export function createPlant(plantType) {
     return plant;
 }
 
-export function createCorn() {
-    let corn = createEntity(...(plantModels.corn[0]));
-    corn.stages = plantModels.corn;
-    corn.stage = 0;
-    corn.growthTime = 0;
-    corn.readyTime = 10;
-    corn.pickable = false;
-    corn.onUpdate = updatePlant;
-    return corn;
-}
-
-export function createPumpkin() {
-    let pumpkin = createEntity(...(plantModels.pumpkin[0]));
-    pumpkin.stages = plantModels.pumpkin;
-    pumpkin.stage = 0;
-    pumpkin.growthTime = 0;
-    pumpkin.readyTime = 10;
-    pumpkin.pickable = false;
-    pumpkin.onUpdate = updatePlant;
-    return pumpkin;
-}
-
 export async function loadPlants() {
     for (const plantType in plantTypes) {
         plantModels[plantTypes[plantType]] = await loadPlant(plantTypes[plantType]);

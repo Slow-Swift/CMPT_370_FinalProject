@@ -49,9 +49,11 @@ function renderScene(scene, ui, camera, light) {
     this.mainShader.prepare(camera, light, projectionMatrix);
     renderEntity(this.mainShader, scene);
 
+    gl.enable(gl.BLEND);
     this.prepareUI();
     this.uiShader.prepare();
     renderEntity(this.uiShader, ui);
+    gl.disable(gl.BLEND);
 }
 
 function renderEntity(shader, entity){

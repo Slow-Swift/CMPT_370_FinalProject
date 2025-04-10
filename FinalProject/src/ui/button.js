@@ -16,7 +16,7 @@ export function createButton(
         borderL = borderR = borderT = borderB = borderWidth;
     }
     const foreground = createQuad(1-borderR-borderL, 1-borderT-borderB, color);
-    foreground.setPosition({x: borderL / 2 - borderR / 2, y: borderB / 2 - borderT / 2})
+    // foreground.setPosition({x: borderL / 2 - borderR / 2, y: borderB / 2 - borderT / 2})
     foreground.pickable = false;
     foreground.setParent(button);
     return button;
@@ -24,7 +24,7 @@ export function createButton(
 
 function onUpdate() {
     const scale = this.mouseOver ? 1.03 : 1;
-    this.transform.scale = [this.size[0] * scale, this.size[1] * scale, 1];
+    this.transform.scale = scale;
 }
 
 function onClick() {

@@ -8,19 +8,23 @@
 
 import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
-import { createEntity } from "./entities/entities.js";
+import { createEntity, createEntity2D } from "./entities/entities.js";
 import { createQuad, setupQuad } from "./ui/quad.js";
-import { createCorn, createPlant, createPumpkin, loadPlants, plantTypes} from "./plant.js";
+import { createPlant, loadPlants, plantTypes} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
 import { createButton } from "./ui/button.js";
+import { loadTexture } from "./entities/textures.js";
 
 
 const applicationData = window.applicationData = {
     scene: createEntity(), 
-    uiScene: createEntity(), 
+    uiScene: createEntity2D(), 
 };
+applicationData.uiScene.transform.anchor = [0,0];
+applicationData.uiScene.transform.position = [-1,-1];
+applicationData.uiScene.transform.scale = 2;
 
 applicationData.light = {
     position: [0, 250, 200],
@@ -45,30 +49,38 @@ window.onload = async function init()
 
     // Start the main loop
     setupFarmland();
-    applicationData.sidePanel = createQuad(0.2, 1.0, [92/255, 64/255, 51/255])
+    applicationData.sidePanel = createQuad(0.2, 1.0, [92/255, 64/255, 51/255]);
     applicationData.sidePanel.setParent(applicationData.uiScene);
-    applicationData.sidePanel.setPosition({left: 4})
+    applicationData.sidePanel.transform.anchor = [1,1];
+    applicationData.sidePanel.transform.position = [1,1];
     const cornBtn = createButton(0.9, 0.1, [1,1,1], () => {
         applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.CORN));
-        applicationData.sidePanel.setPosition({left: 1});
+        applicationData.sidePanel.transform.anchor = [0,1];
         applicationData.selectedFarmland = null;
     });
     cornBtn.setParent(applicationData.sidePanel);
-    cornBtn.setPosition({top: 0.02})
+    cornBtn.transform.anchor = [0.5, 0.5];
+    cornBtn.transform.position = [0.5, 0.93];
     const pumpkinBtn = createButton(0.9, 0.1, [1,1,1], () => {
         applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.PUMPKIN));
-        applicationData.sidePanel.setPosition({left: 1});
+        applicationData.sidePanel.transform.anchor = [0,1];
         applicationData.selectedFarmland = null;
     });
     pumpkinBtn.setParent(applicationData.sidePanel);
-    pumpkinBtn.setPosition({top: 0.14})
+    pumpkinBtn.transform.anchor = [0.5, 0.5];
+    pumpkinBtn.transform.position = [0.5, 0.81];
     const wheatBtn = createButton(0.9, 0.1, [1,1,1], () => {
         applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.WHEAT));
-        applicationData.sidePanel.setPosition({left: 1});
+        applicationData.sidePanel.transform.anchor = [0,1];
         applicationData.selectedFarmland = null;
     });
     wheatBtn.setParent(applicationData.sidePanel);
-    wheatBtn.setPosition({top: 0.26})
+    wheatBtn.transform.anchor = [0.5, 0.5];
+    wheatBtn.transform.position = [0.5, 0.69];
+
+    const testBtn = createQuad(0.1, 0.1, [1,1,1], {aspectRatio: 1, texture: loadTexture("images/icons/pumpkinIcon.png")})
+    testBtn.setParent(applicationData.uiScene);
+
     mainLoop();
 };
 
@@ -86,6 +98,7 @@ function initialize_gl() {
     // Enable backface culling
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.BACK);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 }
 
 async function loadModels() {
