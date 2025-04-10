@@ -54,7 +54,6 @@ export function loadTexture(url) {
             gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
             gl.UNSIGNED_BYTE, image
         );
-        resolve(texture);
     });
     image.src = url;
     return texture;

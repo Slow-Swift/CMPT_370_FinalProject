@@ -24,7 +24,7 @@ import { loadSound } from "./audio.js";
 
 const applicationData = window.applicationData = {
     scene: createEntity(), 
-    uiScene: createEntity(), 
+    uiScene: createEntity2D(), 
     textScene: createEntity(),
 };
 applicationData.uiScene.transform.anchor = [0,0];
