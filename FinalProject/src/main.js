@@ -14,11 +14,16 @@ import { loadPlants} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
+import { createTextEntity } from "./textEntity.js";
+import { createTextAtlas } from "./textAtlas.js";
+
+
 
 
 const applicationData = window.applicationData = {
     scene: createEntity(), 
     uiScene: createEntity(), 
+    textScene: createEntity(),
 };
 
 applicationData.light = {
@@ -48,6 +53,14 @@ window.onload = async function init()
     const quadTwo = createQuad(0.8, 0.15)
     quadTwo.setParent(quad);
     quadTwo.transform.position = [-2, 0.5, 0];
+
+    const atlas = createTextAtlas(gl);
+    gl.textAtlas = atlas.texture;
+    const testText = createTextEntity("Hello, This is working!", atlas);
+    testText.transform.position = [0.5, 0.5, 0];
+    testText.transform.position = [0, 0, 0]; // Center text for testing
+    testText.transform.scale = [1, 1, 1]; 
+    testText.setParent(applicationData.textScene);
     mainLoop();
 };
 
@@ -83,7 +96,7 @@ function mainLoop() {
     applicationData.lastFrameTime = currentTime;
     
     if (resizeCanvas(gl.canvas)) {}
-    applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene, applicationData.camera, applicationData.light);
+    applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene,applicationData.textScene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
 
