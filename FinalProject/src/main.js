@@ -14,14 +14,18 @@ import { loadPlants, plantTypes} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
+import { createTextEntity } from "./textEntity.js";
+import { createTextAtlas } from "./textAtlas.js";
 import { createButton } from "./ui/button.js";
 import { loadTexture } from "./entities/textures.js";
 import { loadSound } from "./audio.js";
 
 
+
 const applicationData = window.applicationData = {
     scene: createEntity(), 
-    uiScene: createEntity2D(), 
+    uiScene: createEntity(), 
+    textScene: createEntity(),
 };
 applicationData.uiScene.transform.anchor = [0,0];
 applicationData.uiScene.transform.position = [-1,-1];
@@ -51,11 +55,16 @@ window.onload = async function init()
 
     // Start the main loop
     setupFarmland();
+    const atlas = createTextAtlas(gl);
+    gl.textAtlas = atlas.texture;
+    const testText = createTextEntity("Hello, This is working!", atlas);
+    testText.transform.position = [0, 0, 0];
+    testText.transform.scale = [0.08, 0.08, 0.08]; 
+    testText.setParent(applicationData.textScene);
     createUI();
     const loadingPanel = document.querySelector('.loadingPanel');
     loadingPanel.style.opacity = '0';
     setTimeout(() => loadingPanel.style.display = 'none', 500);
-
     applicationData.backgroundMusic.play();
     mainLoop();
 };
@@ -168,7 +177,7 @@ function mainLoop() {
     applicationData.lastFrameTime = currentTime;
     
     if (resizeCanvas(gl.canvas)) {}
-    applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene, applicationData.camera, applicationData.light);
+    applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene,applicationData.textScene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
     applicationData.uiScene.update(deltaTime);

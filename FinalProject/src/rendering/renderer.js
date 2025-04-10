@@ -10,6 +10,7 @@ import { createRenderBuffers } from "../picker.js";
 import { loadMainShader } from "./mainShader.js";
 import { loadPickerShader } from "./pickerShader.js";
 import { loadUIShader } from "./uiShader.js";
+import { loadTextShader } from "./textShader.js";
 
 /**
  * Create the renderer object
@@ -19,12 +20,14 @@ export async function createRenderer() {
     return {
         mainShader: await loadMainShader(),
         uiShader: await loadUIShader(),
+        textShader: await loadTextShader(),
         pickerShader: await loadPickerShader(),
         pickerBuffers: await createRenderBuffers(),
         renderScene: renderScene,
         preparePicker: preparePicker,
         prepareMain: prepareMain,
-        prepareUI: prepareUI
+        prepareUI: prepareUI,
+        prepareText: prepareText
     }
 }
 
@@ -34,8 +37,9 @@ export async function createRenderer() {
  * @param camera The camera
  * @param light The light in the scene
  */
-function renderScene(scene, ui, camera, light) {
+function renderScene(scene, ui, text, camera, light) {
     const projectionMatrix = calculateProjectionMatrix(camera);
+
     // Render to the picker texture
     this.preparePicker();
     this.pickerShader.prepare(camera, light, projectionMatrix);
@@ -54,11 +58,16 @@ function renderScene(scene, ui, camera, light) {
     this.prepareUI();
     this.uiShader.prepare();
     renderEntity(this.uiShader, ui);
+  
+    this.prepareText();
+    this.textShader.prepare();
+    renderEntity(this.textShader, text);
+
     gl.disable(gl.BLEND);
 }
 
 function renderEntity(shader, entity){
-    if (entity.model != null){
+    if (entity.model != null){  
         shader.renderEntity(entity);
     }
     for (const child of entity.children){
@@ -86,11 +95,22 @@ function prepareMain() {
 }
 
 /**
- * Prepare the WebGL context to use the main shader shader
+ * Prepare the WebGL context to use the ui shader shader
  */
 function prepareUI() {
     this.pickerBuffers.disable();
     gl.enable(gl.DEPTH_TEST);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+}
+
+/**
+ * Prepare the WebGL context to use the text shader shader
+ */
+function prepareText() {
+    this.pickerBuffers.disable();
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.disable(gl.DEPTH_TEST); // optional, but helps with visibility
     gl.clear(gl.DEPTH_BUFFER_BIT);
 }
 
