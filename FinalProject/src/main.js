@@ -10,12 +10,13 @@ import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
 import { createEntity, createEntity2D } from "./entities/entities.js";
 import { createQuad, setupQuad } from "./ui/quad.js";
-import { createPlant, loadPlants, plantTypes} from "./plant.js";
+import { loadPlants, plantTypes} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
 import { createButton } from "./ui/button.js";
 import { loadTexture } from "./entities/textures.js";
+import { loadSound } from "./audio.js";
 
 
 const applicationData = window.applicationData = {
@@ -41,6 +42,7 @@ window.onload = async function init()
     initialize_gl();
     initializeInputSystem();
     await loadModels();
+    await loadSounds();
 
     applicationData.renderer = await createRenderer();
     applicationData.camera = createCamera();
@@ -49,37 +51,12 @@ window.onload = async function init()
 
     // Start the main loop
     setupFarmland();
-    // applicationData.sidePanel = createQuad(0.2, 1.0, [92/255, 64/255, 51/255]);
-    // applicationData.sidePanel.setParent(applicationData.uiScene);
-    // applicationData.sidePanel.transform.anchor = [1,1];
-    // applicationData.sidePanel.transform.position = [1,1];
-    // const cornBtn = createButton(0.9, 0.1, [1,1,1], () => {
-    //     applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.CORN));
-    //     applicationData.sidePanel.transform.anchor = [0,1];
-    //     applicationData.selectedFarmland = null;
-    // });
-    // cornBtn.setParent(applicationData.sidePanel);
-    // cornBtn.transform.anchor = [0.5, 0.5];
-    // cornBtn.transform.position = [0.5, 0.93];
-    // const pumpkinBtn = createButton(0.9, 0.1, [1,1,1], () => {
-    //     applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.PUMPKIN));
-    //     applicationData.sidePanel.transform.anchor = [0,1];
-    //     applicationData.selectedFarmland = null;
-    // });
-    // pumpkinBtn.setParent(applicationData.sidePanel);
-    // pumpkinBtn.transform.anchor = [0.5, 0.5];
-    // pumpkinBtn.transform.position = [0.5, 0.81];
-    // const wheatBtn = createButton(0.9, 0.1, [1,1,1], () => {
-    //     applicationData.selectedFarmland?.plantCrop(createPlant(plantTypes.WHEAT));
-    //     applicationData.sidePanel.transform.anchor = [0,1];
-    //     applicationData.selectedFarmland = null;
-    // });
-    // wheatBtn.setParent(applicationData.sidePanel);
-    // wheatBtn.transform.anchor = [0.5, 0.5];
-    // wheatBtn.transform.position = [0.5, 0.69];
-
     createUI();
+    const loadingPanel = document.querySelector('.loadingPanel');
+    loadingPanel.style.opacity = '0';
+    setTimeout(() => loadingPanel.style.display = 'none', 500);
 
+    applicationData.backgroundMusic.play();
     mainLoop();
 };
 
@@ -103,6 +80,25 @@ async function loadModels() {
     await loadPlants();
     await loadFarmlandModel();
     setupQuad();
+}
+
+async function loadSounds() {
+    applicationData.plantSounds = [
+        await loadSound("audio/plant1.mp3", 0.4),
+        await loadSound("audio/plant2.mp3", 0.4),
+        await loadSound("audio/plant3.mp3", 0.4),
+    ];
+    applicationData.harvestSounds = [
+        await loadSound("audio/harvest1.mp3"),
+        await loadSound("audio/harvest2.mp3"),
+        await loadSound("audio/harvest3.mp3"),
+    ];
+    applicationData.unlockSounds = [
+        await loadSound("audio/unlock1.mp3", 0.2),
+        await loadSound("audio/unlock2.mp3", 0.2),
+        await loadSound("audio/unlock3.mp3", 0.2),
+    ];
+    applicationData.backgroundMusic = await loadSound("audio/background.mp3", 0.2, true);
 }
 
 function createUI() {

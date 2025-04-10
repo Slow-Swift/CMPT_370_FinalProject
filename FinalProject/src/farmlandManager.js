@@ -7,7 +7,6 @@ export function setupFarmland() {
     farmland[[0,0]] = startLand;
     startLand.setParent(applicationData.scene);
     unlockFarmland(startLand);
-    console.log(startLand);
 }
 
 export function unlockFarmland(farmland) {
