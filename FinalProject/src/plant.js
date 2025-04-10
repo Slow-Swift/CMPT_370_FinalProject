@@ -16,6 +16,7 @@ export function createPlant(plantType) {
     plant.readyTime = 10;
     plant.pickable = false;
     plant.onUpdate = updatePlant;
+    plant.type = plantType;
     return plant;
 }
 

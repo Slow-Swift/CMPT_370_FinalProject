@@ -14,8 +14,7 @@ import { loadPlants, plantTypes} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
-import { createTextEntity } from "./textEntity.js";
-import { createTextAtlas } from "./textAtlas.js";
+import { createTextEntity, initializeTextAtlas } from "./textEntity.js";
 import { createButton } from "./ui/button.js";
 import { loadTexture } from "./entities/textures.js";
 import { loadSound } from "./audio.js";
@@ -26,6 +25,7 @@ const applicationData = window.applicationData = {
     scene: createEntity(), 
     uiScene: createEntity2D(), 
     textScene: createEntity(),
+
 };
 applicationData.uiScene.transform.anchor = [0,0];
 applicationData.uiScene.transform.position = [-1,-1];
@@ -38,6 +38,11 @@ applicationData.light = {
     specular: [0.2,0.2,0.2]
 };
 
+applicationData.plants = {};
+applicationData.plants[plantTypes.CORN] = {seeds: 1, harvested: 0};
+applicationData.plants[plantTypes.PUMPKIN] = {seeds: 1, harvested: 0};
+applicationData.plants[plantTypes.WHEAT] = {seeds: 1, harvested: 0};
+
 /**
  * Sets up the program when the window loads
  */
@@ -47,21 +52,17 @@ window.onload = async function init()
     initializeInputSystem();
     await loadModels();
     await loadSounds();
+    initializeTextAtlas();
 
     applicationData.renderer = await createRenderer();
     applicationData.camera = createCamera();
     applicationData.camera.transform.position = [-100, 100, 100];
     applicationData.camera.transform.rotation = [-35, -45, 0];
 
-    // Start the main loop
+    // Start the scene
     setupFarmland();
-    const atlas = createTextAtlas(gl);
-    gl.textAtlas = atlas.texture;
-    const testText = createTextEntity("Hello, This is working!", atlas);
-    testText.transform.position = [0, 0, 0];
-    testText.transform.scale = [0.08, 0.08, 0.08]; 
-    testText.setParent(applicationData.textScene);
     createUI();
+    
     const loadingPanel = document.querySelector('.loadingPanel');
     loadingPanel.style.opacity = '0';
     setTimeout(() => loadingPanel.style.display = 'none', 500);
@@ -165,6 +166,43 @@ function createUI() {
     });
     wheatBtn.setParent(selectors);
     createQuad(.8, .8, [1,1,1], {texture: wheatTexture, pickable:false}).setParent(wheatBtn);
+
+    const resourceDisplay = createQuad(0, 0.08, [139/255,92/255,60/255], {aspectRatio: 0.2, anchor: [0.5, 1], position: [0.5, 1]});
+    const resourceDisplayOverlay = createQuad(0.97, 0.90, [1,209/255,114/255]);
+    resourceDisplayOverlay.setParent(resourceDisplay);
+    resourceDisplay.setParent(applicationData.uiScene);
+
+    const cornIcon = createQuad(0.6 * 0.2, 0.6, [1,1,1], {texture: cornTexture, position: [0.1, 0.5]});
+    const pumpkinIcon = createQuad(0.6*0.2, 0.6, [1,1,1], {texture: pumpkinTexture, position: [0.4, 0.5]});
+    const wheatIcon = createQuad(0.6 * 0.2, 0.6, [1,1,1], {texture: wheatTexture, position: [0.7, 0.5]});
+    cornIcon.setParent(resourceDisplayOverlay);
+    pumpkinIcon.setParent(resourceDisplayOverlay);
+    wheatIcon.setParent(resourceDisplayOverlay);
+
+    const cornText = createTextEntity("1");
+    cornText.transform.width = 0.3;
+    cornText.transform.height = 0.3;
+    cornText.transform.anchor = [0, 0.5];
+    cornText.transform.position = [1.4, 0.6]; 
+    cornText.setParent(cornIcon);
+
+    const pumpkinText = createTextEntity("1");
+    pumpkinText.transform.width = 0.3;
+    pumpkinText.transform.height = 0.3;
+    pumpkinText.transform.anchor = [0, 0.5];
+    pumpkinText.transform.position = [1.4, 0.6]; 
+    pumpkinText.setParent(pumpkinIcon);
+
+    const wheatText = createTextEntity("1");
+    wheatText.transform.width = 0.3;
+    wheatText.transform.height = 0.3;
+    wheatText.transform.anchor = [0, 0.5];
+    wheatText.transform.position = [1.4, 0.6]; 
+    wheatText.setParent(wheatIcon);
+
+    applicationData.cornText = cornText;
+    applicationData.pumpkinText = pumpkinText;
+    applicationData.wheatText = wheatText;
 }
 
 /**
@@ -177,11 +215,14 @@ function mainLoop() {
     applicationData.lastFrameTime = currentTime;
     
     if (resizeCanvas(gl.canvas)) {}
-    applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene,applicationData.textScene, applicationData.camera, applicationData.light);
+    applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
     applicationData.uiScene.update(deltaTime);
     applicationData.camera.update(deltaTime);
+    applicationData.cornText.setText(String(applicationData.plants[plantTypes.CORN].seeds));
+    applicationData.pumpkinText.setText(String(applicationData.plants[plantTypes.PUMPKIN].seeds));
+    applicationData.wheatText.setText(String(applicationData.plants[plantTypes.WHEAT].seeds));
     updateInputs();
     requestAnimationFrame(mainLoop);
 }
