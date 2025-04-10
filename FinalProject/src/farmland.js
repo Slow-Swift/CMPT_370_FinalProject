@@ -40,13 +40,18 @@ function onClick() {
     }
     if (this.plant) {
         if (this.plant.ready) {
+            applicationData.plants[this.plant.type].seeds += 1 + Math.ceil(Math.random() * 4);
+            console.log(applicationData.plants[this.plant.type]);
             this.plant.setParent(null);
             this.plant = null;
             applicationData.harvestSounds[Math.floor(Math.random() * applicationData.harvestSounds.length)].play();
         }
     } else {
-        this.plantCrop(applicationData.selectedCrop);
-        applicationData.plantSounds[Math.floor(Math.random() * applicationData.plantSounds.length)].play();
+        if (applicationData.plants[applicationData.selectedCrop].seeds > 0) {
+            this.plantCrop(applicationData.selectedCrop);
+            applicationData.plantSounds[Math.floor(Math.random() * applicationData.plantSounds.length)].play();
+            applicationData.plants[applicationData.selectedCrop].seeds--;
+        }
     }
 }
 
@@ -59,5 +64,5 @@ function plantCrop(crop) {
 }
 
 function canInteract() {
-    return !this.unlocked || !this.plant || this.plant.ready;
+    return !this.unlocked || (!this.plant && applicationData.plants[applicationData.selectedCrop].seeds > 0) || this.plant?.ready;
 }
