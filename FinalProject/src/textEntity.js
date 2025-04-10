@@ -62,13 +62,13 @@ function createCharQuad(uv, fontTexture) {
     ]);
 
     const uvs = new Float32Array([
-        uv.uMin, uv.vMin,
         uv.uMin, uv.vMax,
-        uv.uMax, uv.vMax,
+        uv.uMin, uv.vMin,
         uv.uMax, uv.vMin,
+        uv.uMax, uv.vMax,
     ]);
 
-    const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
+    const indices = new Uint16Array([0, 2, 1, 0, 3, 2]);
 
-    return createModels(indices, positions, uvs, [], [{ material: { texture: fontTexture, color: [1.0, 1.0, 1.0] } }]);
+    return createModels(indices, positions, uvs, [], [{ material: { texture: fontTexture, color: [1.0, 0.0, 0.0] } }]);
 }

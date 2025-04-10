@@ -101,9 +101,6 @@ function prepareUI() {
  * Prepare the WebGL context to use the text shader shader
  */
 function prepareText() {
-    // this.pickerBuffers.disable();
-    // gl.disable(gl.DEPTH_TEST);
-    // gl.clear(gl.DEPTH_BUFFER_BIT);
     this.pickerBuffers.disable();
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);

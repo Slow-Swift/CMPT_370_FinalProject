@@ -57,9 +57,8 @@ window.onload = async function init()
     const atlas = createTextAtlas(gl);
     gl.textAtlas = atlas.texture;
     const testText = createTextEntity("Hello, This is working!", atlas);
-    testText.transform.position = [0.5, 0.5, 0];
-    testText.transform.position = [0, 0, 0]; // Center text for testing
-    testText.transform.scale = [1, 1, 1]; 
+    testText.transform.position = [0, 0, 0];
+    testText.transform.scale = [0.08, 0.08, 0.08]; 
     testText.setParent(applicationData.textScene);
     mainLoop();
 };
