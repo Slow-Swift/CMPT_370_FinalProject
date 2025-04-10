@@ -8,15 +8,17 @@
 
 import { createRenderer } from "./rendering/renderer.js";
 import { createCamera } from "./entities/camera.js";
-import { createEntity } from "./entities/entities.js";
-import { createQuad, setupQuad } from "./quad.js";
-import { loadPlants} from "./plant.js";
+import { createEntity, createEntity2D } from "./entities/entities.js";
+import { createQuad, setupQuad } from "./ui/quad.js";
+import { loadPlants, plantTypes} from "./plant.js";
 import { loadFarmlandModel } from "./farmland.js";
 import { initializeInputSystem, updateInputs } from "./inputManager.js";
 import { setupFarmland } from "./farmlandManager.js";
 import { createTextEntity } from "./textEntity.js";
 import { createTextAtlas } from "./textAtlas.js";
-
+import { createButton } from "./ui/button.js";
+import { loadTexture } from "./entities/textures.js";
+import { loadSound } from "./audio.js";
 
 
 
@@ -25,10 +27,15 @@ const applicationData = window.applicationData = {
     uiScene: createEntity(), 
     textScene: createEntity(),
 };
+applicationData.uiScene.transform.anchor = [0,0];
+applicationData.uiScene.transform.position = [-1,-1];
+applicationData.uiScene.transform.scale = 2;
 
 applicationData.light = {
-    position: [200, 200, 0],
-    color: [1,1,1]
+    position: [0, 250, 200],
+    ambient: [0.05,0.05,0.05],
+    diffuse: [1,1,1],
+    specular: [0.2,0.2,0.2]
 };
 
 /**
@@ -39,27 +46,26 @@ window.onload = async function init()
     initialize_gl();
     initializeInputSystem();
     await loadModels();
+    await loadSounds();
 
     applicationData.renderer = await createRenderer();
     applicationData.camera = createCamera();
-    applicationData.camera.transform.position = [-10, 10, 10];
+    applicationData.camera.transform.position = [-100, 100, 100];
     applicationData.camera.transform.rotation = [-35, -45, 0];
 
-
+    // Start the main loop
     setupFarmland();
-    const quad = createQuad(0.2, 1.0)
-    quad.setParent(applicationData.uiScene);
-    quad.transform.position = [0.8, 0, 0];
-    const quadTwo = createQuad(0.8, 0.15)
-    quadTwo.setParent(quad);
-    quadTwo.transform.position = [-2, 0.5, 0];
-
     const atlas = createTextAtlas(gl);
     gl.textAtlas = atlas.texture;
     const testText = createTextEntity("Hello, This is working!", atlas);
     testText.transform.position = [0, 0, 0];
     testText.transform.scale = [0.08, 0.08, 0.08]; 
     testText.setParent(applicationData.textScene);
+    createUI();
+    const loadingPanel = document.querySelector('.loadingPanel');
+    loadingPanel.style.opacity = '0';
+    setTimeout(() => loadingPanel.style.display = 'none', 500);
+    applicationData.backgroundMusic.play();
     mainLoop();
 };
 
@@ -85,6 +91,82 @@ async function loadModels() {
     setupQuad();
 }
 
+async function loadSounds() {
+    applicationData.plantSounds = [
+        await loadSound("audio/plant1.mp3", 0.4),
+        await loadSound("audio/plant2.mp3", 0.4),
+        await loadSound("audio/plant3.mp3", 0.4),
+    ];
+    applicationData.harvestSounds = [
+        await loadSound("audio/harvest1.mp3"),
+        await loadSound("audio/harvest2.mp3"),
+        await loadSound("audio/harvest3.mp3"),
+    ];
+    applicationData.unlockSounds = [
+        await loadSound("audio/unlock1.mp3", 0.2),
+        await loadSound("audio/unlock2.mp3", 0.2),
+        await loadSound("audio/unlock3.mp3", 0.2),
+    ];
+    applicationData.backgroundMusic = await loadSound("audio/background.mp3", 0.2, true);
+}
+
+function createUI() {
+    const cornTexture = loadTexture("images/icons/cornIcon.png");
+    const pumpkinTexture = loadTexture("images/icons/pumpkinIcon.png");
+    const wheatTexture = loadTexture("images/icons/wheatIcon.png");
+    const slotTexture = loadTexture("images/slot.png");
+
+    const cropPicker = createButton(
+        0.05, 0, [1,1,1], () => selectors.transform.scale = 1 - selectors.transform.scale, {aspectRatio: 1, texture: slotTexture,
+        position: [0.95, 0.1]
+    });
+    cropPicker.setParent(applicationData.uiScene);
+    const selectedCropImg = createQuad(.8, .8, [1,1,1], {texture: cornTexture, pickable:false});
+    selectedCropImg.setParent(cropPicker);
+
+    const selectors = createEntity2D();
+    selectors.transform.width = 0.05;
+    selectors.transform.aspectRatio = 1;
+    selectors.transform.position = [0.95, 0.1];
+    selectors.transform.scale = 0;
+
+    selectors.setParent(applicationData.uiScene);
+
+    applicationData.selectedCrop = plantTypes.CORN;
+    const cornBtn = createButton(
+        1, 1, [1,1,1], () => {
+            selectors.transform.scale = 0;
+            applicationData.selectedCrop = plantTypes.CORN;
+            selectedCropImg.materials[0].texture = cornTexture;
+        }, {texture: slotTexture,
+        position: [0.5, 1.7]
+    });
+    cornBtn.setParent(selectors);
+    createQuad(.8, .8, [1,1,1], {texture: cornTexture, pickable:false}).setParent(cornBtn);
+    
+    const pumpkinBtn = createButton(
+        1, 1, [1,1,1], () => {
+            selectors.transform.scale = 0;
+            applicationData.selectedCrop = plantTypes.PUMPKIN;
+            selectedCropImg.materials[0].texture = pumpkinTexture;
+        }, {texture: slotTexture,
+        position: [0.5, 2.8]
+    });
+    pumpkinBtn.setParent(selectors);
+    createQuad(.8, .8, [1,1,1], {texture: pumpkinTexture, pickable:false}).setParent(pumpkinBtn);
+
+    const wheatBtn = createButton(
+        1, 1, [1,1,1], () => {
+            selectors.transform.scale = 0;
+            applicationData.selectedCrop = plantTypes.WHEAT;
+            selectedCropImg.materials[0].texture = wheatTexture;
+        }, {texture: slotTexture,
+        position: [0.5, 3.9]
+    });
+    wheatBtn.setParent(selectors);
+    createQuad(.8, .8, [1,1,1], {texture: wheatTexture, pickable:false}).setParent(wheatBtn);
+}
+
 /**
  * The main rendering loop
  * Redraws the screen and updates the rocket ship
@@ -98,8 +180,8 @@ function mainLoop() {
     applicationData.renderer.renderScene(applicationData.scene,applicationData.uiScene,applicationData.textScene, applicationData.camera, applicationData.light);
     applicationData.mouseID = applicationData.renderer.pickerBuffers.getID(inputData.mouse.x, inputData.mouse.y);
     applicationData.scene.update(deltaTime);
-
-
+    applicationData.uiScene.update(deltaTime);
+    applicationData.camera.update(deltaTime);
     updateInputs();
     requestAnimationFrame(mainLoop);
 }
@@ -119,7 +201,6 @@ function resizeCanvas() {
         gl.canvas.height = displayHeight;
         gl.viewport(0, 0, displayWidth, displayHeight);
         applicationData.renderer.pickerBuffers.resize(displayWidth, displayHeight);
-        applicationData.renderer.recalculateProjectionMatrix();
     }
     return resizeRequired;
 }

@@ -8,6 +8,11 @@
 
 import { createTransform } from "./entities.js";
 
+const SPEED = 1;
+const SCALE_SPEED = 20;
+const MIN_SCALE = 5;
+const MAX_SCALE = 50;
+
 /**
  * Create a camera object
  * @returns The camera object
@@ -15,7 +20,9 @@ import { createTransform } from "./entities.js";
 export function createCamera() {
     return {
         transform: createTransform(),
-        getViewMatrix: getViewMatrix
+        size: 10,
+        getViewMatrix: getViewMatrix,
+        update: update
     };
 }
 
@@ -30,4 +37,32 @@ function getViewMatrix() {
     rotation = mult(rotation, rotateY(-this.transform.rotation[1]));
 
     return mult(rotation, transformation);
+}
+
+function update(deltaTime) {
+    let moveX = 0;
+    let moveZ = 0;
+    if (inputData.isDown['KeyW']) moveX += 1;
+    if (inputData.isDown['KeyS']) moveX -= 1;
+    if (inputData.isDown['KeyA']) moveZ -= 1;
+    if (inputData.isDown['KeyD']) moveZ += 1;
+    const multiplier = inputData.isDown['ShiftLeft'] ? 3 : 1;
+    
+    // Transform directions from local to world (but only in 2D)
+    const cosY = Math.cos(this.transform.rotation[1] * Math.PI / 180);
+    const sinY = Math.sin(this.transform.rotation[1] * Math.PI / 180);
+    const worldX = cosY * moveX - sinY * moveZ;
+    const worldZ = sinY * moveX + cosY * moveZ;
+
+    this.transform.position[0] += worldX * SPEED * this.size * multiplier * deltaTime;
+    this.transform.position[2] += worldZ * SPEED * this.size * multiplier * deltaTime;
+
+    if (inputData.isDown['KeyQ']) this.size -= SCALE_SPEED * multiplier * deltaTime;
+    if (inputData.isDown['KeyE']) this.size += SCALE_SPEED * multiplier * deltaTime;
+    this.size = Math.max(Math.min(this.size, MAX_SCALE), MIN_SCALE);
+
+    if (inputData.isDown['KeyH'] && !inputData.wasDown['KeyH']) {
+        this.size = 10;
+        this.transform.position = [-100, 100, 100];
+    }
 }

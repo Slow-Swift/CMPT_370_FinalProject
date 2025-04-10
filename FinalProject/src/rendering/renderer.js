@@ -23,9 +23,7 @@ export async function createRenderer() {
         textShader: await loadTextShader(),
         pickerShader: await loadPickerShader(),
         pickerBuffers: await createRenderBuffers(),
-        projectionMatrix: calculateProjectionMatrix(),
         renderScene: renderScene,
-        recalculateProjectionMatrix: function() { this.projectionMatrix = calculateProjectionMatrix() },
         preparePicker: preparePicker,
         prepareMain: prepareMain,
         prepareUI: prepareUI,
@@ -40,24 +38,32 @@ export async function createRenderer() {
  * @param light The light in the scene
  */
 function renderScene(scene, ui, text, camera, light) {
+    const projectionMatrix = calculateProjectionMatrix(camera);
+
     // Render to the picker texture
     this.preparePicker();
-    this.pickerShader.prepare(camera, light, this.projectionMatrix);
+    this.pickerShader.prepare(camera, light, projectionMatrix);
     renderEntity(this.pickerShader, scene);
+    gl.clear(gl.DEPTH_BUFFER_BIT);
+    this.pickerShader.prepare2D();
+    renderEntity(this.pickerShader, ui);
 
     // Render to the screen
     this.prepareMain();
-    this.mainShader.prepare(camera, light, this.projectionMatrix);
+    this.mainShader.prepare(camera, light, projectionMatrix);
     renderEntity(this.mainShader, scene);
 
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     this.prepareUI();
     this.uiShader.prepare();
     renderEntity(this.uiShader, ui);
-
+  
     this.prepareText();
     this.textShader.prepare();
     renderEntity(this.textShader, text);
 
+    gl.disable(gl.BLEND);
 }
 
 function renderEntity(shader, entity){
@@ -112,11 +118,10 @@ function prepareText() {
  * Calculate the projection matrix to use
  * @returns The projection matrix
  */
-function calculateProjectionMatrix() {
+function calculateProjectionMatrix(camera) {
     const NEAR_PLANE = 0.1;
     const FAR_PLANE = 1000;
     const aspectRatio = gl.canvas.width / gl.canvas.height;
-    const SIZE = 10;
-    // return perspective(FOV, aspectRatio, NEAR_PLANE, FAR_PLANE);
-    return ortho(-SIZE, SIZE, -SIZE / aspectRatio, SIZE / aspectRatio, NEAR_PLANE, FAR_PLANE);
+    const size = camera.size;
+    return ortho(-size, size, -size / aspectRatio, size / aspectRatio, NEAR_PLANE, FAR_PLANE);
 }
