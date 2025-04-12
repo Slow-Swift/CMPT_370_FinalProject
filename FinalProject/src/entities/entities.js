@@ -22,7 +22,7 @@ let currentID = 1;
 export function createEntity(model, materials) {
     const entity = {
         model: model,
-        materials: structuredClone(materials),
+        materials: cloneMaterials(materials),
         id: currentID++,
         children: [],
         parent: null,
@@ -124,4 +124,19 @@ function update(deltaTime) {
     for (const child of this.children){
         child.update(deltaTime);
     }
+}
+
+function cloneMaterials(materials) {
+    if (materials == undefined) return materials;
+
+    const copiedMaterials = [];
+    for (const material of materials) {
+        const texture = material.texture;
+        delete material.texture;
+        const copied = structuredClone(material);
+        copied.texture = texture;
+        material.texture = texture;
+        copiedMaterials.push(copied);
+    }
+    return copiedMaterials;
 }

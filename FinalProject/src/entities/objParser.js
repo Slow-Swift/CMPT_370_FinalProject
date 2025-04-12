@@ -149,7 +149,7 @@ async function parseMaterialFile(file) {
                     specular: [1,1,1],
                     emissive: [0,0,0],
                     shininess: [0,0,0],
-                    hasTexture: false
+                    useTexture: false
                 };
                 materialNames[data[0]] = materials.length;
                 materials.push(currentMaterial);
@@ -173,7 +173,7 @@ async function parseMaterialFile(file) {
                 const filename = data[0].split('/').pop();
                 // Replace this with a call to your load texture function
                 currentMaterial.texture = loadTexture(IMAGE_FOLDER + filename); 
-                currentMaterial.hasTexture = true;
+                currentMaterial.useTexture = true;
                 break;
         }
     }
