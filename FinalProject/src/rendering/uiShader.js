@@ -1,3 +1,10 @@
+/**
+ * File Name: uiShader.js
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
+ * Description:
+ *  Loads and manages the shader used to render 2D UI elements with optional textures and color tinting.
+ */
 import { loadShader } from "./shader.js";
 
 /**

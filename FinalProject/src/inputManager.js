@@ -1,3 +1,11 @@
+/**
+ * File Name: inputManager.js
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
+ * Description:
+ *  This file manages user input from the keyboard and mouse.
+ *  It tracks mouse position, clicks, and which keys are pressed or released.
+ */
 window.inputData = {
     mouse: {x:0, y:0},
     isDown: {},

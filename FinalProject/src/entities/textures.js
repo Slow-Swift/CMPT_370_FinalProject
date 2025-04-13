@@ -1,7 +1,7 @@
 /**
  * File Name: textures.js
- * Name: Finian Lugtigheid
- * Date: February 10, 2025
+ * Name: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *   Creates Webgl textures that may be used to texture an object
  */

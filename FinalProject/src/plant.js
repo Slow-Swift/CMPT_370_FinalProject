@@ -1,3 +1,11 @@
+/**
+ * File Name: plant.js
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
+ * Description:
+ *  This file handles the loading, creation, and updating of plant entities in the game.
+ */
+
 import { loadObj } from "./entities/objParser.js";
 import { createEntity } from "./entities/entities.js";
 

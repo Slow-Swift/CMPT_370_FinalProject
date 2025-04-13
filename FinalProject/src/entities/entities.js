@@ -1,7 +1,7 @@
 /**
  * File Name: entities.js
- * Name: Finian Lugtigheid
- * Date: TODO
+ * Name: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *   Creates entities that may be rendered by a shader
  */

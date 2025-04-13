@@ -1,7 +1,7 @@
 /**
  * File Name: camera.js
- * Author: Finian Lugtigheid
- * Date: TODO
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *  Creates a camera object to more easily control the view of the game
  */

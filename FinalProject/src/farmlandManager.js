@@ -1,3 +1,11 @@
+
+/**
+ * File Name: farmlandManager.js
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
+ * Description:
+ *  This file handles the creation and unlocking of farmland areas in the game.
+ */
 import { createFarmland } from "./farmland.js"
 
 const farmland = {}

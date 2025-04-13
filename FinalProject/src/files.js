@@ -1,7 +1,7 @@
 /**
  * File Name: files.js
- * Author: Finian Lugtigheid
- * Date: TODO
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *  Functions to get the content of stored files
  */
