@@ -10,7 +10,6 @@ import { createRenderBuffers } from "../picker.js";
 import { loadMainShader } from "./mainShader.js";
 import { loadPickerShader } from "./pickerShader.js";
 import { loadUIShader } from "./uiShader.js";
-import { loadTextShader } from "./textShader.js";
 
 /**
  * Create the renderer object
@@ -20,7 +19,6 @@ export async function createRenderer() {
     return {
         mainShader: await loadMainShader(),
         uiShader: await loadUIShader(),
-        textShader: await loadTextShader(),
         pickerShader: await loadPickerShader(),
         pickerBuffers: await createRenderBuffers(),
         renderScene: renderScene,
@@ -37,7 +35,7 @@ export async function createRenderer() {
  * @param camera The camera
  * @param light The light in the scene
  */
-function renderScene(scene, ui, text, camera, light) {
+function renderScene(scene, ui, camera, light) {
     const projectionMatrix = calculateProjectionMatrix(camera);
 
     // Render to the picker texture
@@ -58,11 +56,6 @@ function renderScene(scene, ui, text, camera, light) {
     this.prepareUI();
     this.uiShader.prepare();
     renderEntity(this.uiShader, ui);
-  
-    this.prepareText();
-    this.textShader.prepare();
-    renderEntity(this.textShader, text);
-
     gl.disable(gl.BLEND);
 }
 

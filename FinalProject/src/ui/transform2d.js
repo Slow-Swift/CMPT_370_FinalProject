@@ -51,7 +51,7 @@ function calculateSize(transform) {
         return [transform.width * transform.scale, transform.height * transform.scale];
     }
 
-    const pixels = transform.width != 0 ? gl.canvas.width * transform.width : gl.canvas.height * transform.height;
+    const pixels = transform.width != 0 ? gl.canvas.width * transform.width : gl.canvas.height * transform.height / transform.aspectRatio;
     const width = pixels / gl.canvas.width;
     const height = pixels / gl.canvas.height * transform.aspectRatio;
     return [width * transform.scale, height * transform.scale];
