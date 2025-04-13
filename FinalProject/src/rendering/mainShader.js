@@ -1,7 +1,7 @@
 /**
  * File Name: mainShader.js
- * Author: Finian Lugtigheid
- * Date: TODO
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *  Loads and manages the main shader used to render the scene
  */
