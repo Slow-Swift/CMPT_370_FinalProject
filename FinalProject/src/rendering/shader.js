@@ -1,7 +1,7 @@
 /**
  * File Name: shader.js
- * Name: Finian Lugtigheid
- * Date: TODO
+ * Name: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *   Loads a shader given the shader name
  */

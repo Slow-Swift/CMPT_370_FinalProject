@@ -1,7 +1,7 @@
 /**
  * File Name: objParser.js
- * Name: Finian Lugtigheid
- * Date: TODO
+ * Name: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *   Loads an OBJ file and creates an entity from it
  */

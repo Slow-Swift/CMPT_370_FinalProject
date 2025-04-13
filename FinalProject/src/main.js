@@ -1,7 +1,7 @@
 /**
  * File Name: main.js
- * Author: Finian Lugtigheid
- * Date: TODO
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *  The heart of the app. It sets up the scene and updates it each frame.
  */

@@ -1,9 +1,10 @@
 /**
  * File Name: models.js
- * Name: Kenneth Hoesien
- * Date: TODO
+ * Name: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
- *   Creates entities that may be rendered by a shader
+ *   Handles creation and setup of 3D model data in WebGL, including VAOs, vertex attributes,
+ *  and index buffers for rendering entities.
  */
 
 /**

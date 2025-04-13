@@ -1,7 +1,7 @@
 /**
  * File Name: renderer.js
- * Author: Finian Lugtigheid
- * Date: TODO
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *  A renderer object which is capable of rendering the scene using multiple shaders
  */

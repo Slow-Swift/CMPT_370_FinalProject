@@ -1,7 +1,7 @@
 /**
  * File Name: pickerShader.js
- * Author: Finian Lugtigheid
- * Date: TODO
+ * Author: Finian Lugtigheid & Kenneth Renald Hoesien
+ * Date: April 12th, 2025
  * Description:
  *  Loads and manages the shader used to render to the picker texture
  */
