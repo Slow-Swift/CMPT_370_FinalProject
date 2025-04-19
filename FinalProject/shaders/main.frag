@@ -42,8 +42,8 @@ void main()
 
   vec3 ambient = ambientColor * ambientLight;
   float lightStrength = length(diffuse + specular);
-float darkness = 1.0 - clamp(lightStrength, 0.0, 1.0);
-vec3 boostedAmbient = ambient * mix(0.2, 2.0, darkness);
+  float darkness = 1.0 - clamp(lightStrength, 0.0, 1.0);
+  vec3 boostedAmbient = ambient * mix(0.2, 2.0, darkness);
 
   fColor = baseColor * vec4(diffuse + specular + boostedAmbient, 1.0) + vec4(emissiveColor, 1.0);
 }
