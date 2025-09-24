@@ -52,10 +52,10 @@ window.onload = async function init()
     await loadSounds();
     initializeTextAtlas();
 
-    // applicationData.renderer = await createRenderer();
-    // applicationData.camera = createCamera();
-    // applicationData.camera.transform.position = [-100, 100, 100];
-    // applicationData.camera.transform.rotation = [-35, -45, 0];
+    applicationData.renderer = await createRenderer();
+    applicationData.camera = createCamera();
+    applicationData.camera.transform.position = [-100, 100, 100];
+    applicationData.camera.transform.rotation = [-35, -45, 0];
 
     // Start the scene
     setupFarmland();
